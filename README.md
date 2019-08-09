@@ -9,3 +9,7 @@ Historical Weather Data
 **Install**
 Anaconda 3.7
 
+**Terminology**
+
+	Terminator: The line that separates day and night, it is also referred to as the "grey line" and the "twilight zone".  For more information see
+    https://sos.noaa.gov/datasets/daynight-terminator-daily/
