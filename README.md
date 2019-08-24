@@ -17,3 +17,7 @@ Anaconda 3.7
 
 **Important!**
 	This code has been tested on Ubuntu 18.04LTS other Linux distributions might work.
+	aria2 is used instead of wget to speed up downloading the data.  wget only downloads a file at a time.
+
+	if using ubuntu
+	sudo apt install aria2

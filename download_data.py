@@ -31,23 +31,20 @@ def create_urls_list_file():
     global days
     global years
     global base_url
-    leap_year = days
-    regular_year = days[:-1]
 
     with open('ionex_files_urls.txt', 'w') as file:
         for year in years:
             
-            if int(year) % 4 == 0:
-                days = leap_year
+            if int(year)%4 == 0:
+                days_in_year = days
             else:
-                days == regular_year
+                days_in_year = days[:-1]
             
-            for day in days:
+            for day in days_in_year:
                 file.write((generate_file_url(base_url, year, day) + '\n'))
             
 def save_files():
     subprocess.Popen(['bash', 'download_files.sh'])
-
 
     # Some infourls
     print('Finished downloading files')
