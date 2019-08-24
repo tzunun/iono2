@@ -1,4 +1,5 @@
 *.ipynb
 *apikey*
 *get-log*
-*.vscode*
+*.vscode/
+**/ionex_files/*
