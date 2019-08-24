@@ -28,6 +28,9 @@ def generate_file_url(url, year, day):
 
 
 def create_urls_list_file():
+    global days
+    global years
+    global base_url
     leap_year = days
     regular_year = days[:-1]
 
