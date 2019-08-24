@@ -1,2 +1,4 @@
 *.ipynb
 *apikey*
+*get-log*
+*.vscode*
