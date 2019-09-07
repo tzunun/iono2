@@ -32,7 +32,7 @@ def create_urls_list_file():
     global years
     global base_url
 
-    with open('ionex_files_urls.txt', 'w') as file:
+    with open('../ionex_files_urls.txt', 'w') as file:
         for year in years:
             
             if int(year)%4 == 0:
@@ -44,7 +44,7 @@ def create_urls_list_file():
                 file.write((generate_file_url(base_url, year, day) + '\n'))
             
 def save_files():
-    subprocess.Popen(['bash', 'download_files.sh'])
+    subprocess.Popen(['bash', '../shell_scripts/download_files.sh'])
 
     # Some infourls
     print('Finished downloading files')
@@ -53,7 +53,7 @@ def save_files():
 def download_files():
 
     # Check if file exists, else create the file
-    if os.path.isfile('ionex_files_urls.txt'):
+    if os.path.isfile('../ionex_files_urls.txt'):
         save_files()
     else:
         create_urls_list_file()
