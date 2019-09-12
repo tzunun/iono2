@@ -1,5 +1,7 @@
 *.ipynb
 *apikey*
+*.mapbox_token*
 *get-log*
 *.vscode/
 **/ionex_files/*
+*jplg**

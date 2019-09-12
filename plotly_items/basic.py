@@ -1,67 +1,102 @@
-import dash
-import dash_core_components as dcc 
-import dash_html_components as html 
-from dash.dependencies import Output, Input
-import plotly.graph_objs as go 
-import plotly.express as px
+
 import numpy as np
+import random
 
-gapminder = px.data.gapminder()
+#y = np.arange(90,-92.5,-2.5)
 
-tips = px.data.tips()
-col_options = [dict(label=x, value=x) for x in tips.columns]
-dimensions = ["x", "y", "color", "facet_col", "facet_row"]
+x = [np.arange(-180,185,5) for i in range(73)]
+y = [np.arange(90,-92.5,-2.5) for i in range(73)]
+z = [random.randrange(400) for p in range(0,(len(x)*len(y)))] 
 
+lon = np.asarray(x)
+lat = np.asarray(y)
+depth = np.asarray(z)
 
-app = dash.Dash(
-    __name__, external_stylesheets=["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-)
+# Transpose lat, lat.T
+lat = lat.T
 
-# Create DATA
+# Flatten the arrays
+lon = lon.flatten()
+lat = lat.flatten()
+depth = depth.flatten()
 
-np.random.seed(42)
-random_x = np.random.randint(1,101,100)
-random_y = np.random.randint(1,101,100)
+X, Y = np.meshgrid(x,y)
 
-# Display graphs inside the Div
-#app.layout = html.Div([graph1, graph2])
-#app.layout = html.Div([
-#    dcc.Input(id='my-id', value='')
-#])
-
-app.layout = html.Div(
-    [
-        html.H1("Demo: Plotly Express in Dash with Tips Dataset"),
-        html.Div(
-            [
-                html.P([d + ":", dcc.Dropdown(id=d, options=col_options)])
-                for d in dimensions
-            ],
-            style={"width": "25%", "float": "left"},
-        ),
-        dcc.Graph(id="graph", style={"width": "75%", "display": "inline-block"}),
-        dcc.Graph(id="graph2", style={"width": "75%", "display": "inline-block"}),
-    ]
-)
-
-z = [[None, None, None, 12, 13, 14, 15, 16],
-     [None, 1, None, 11, None, None, None, 17],
-     [None, 2, 6, 7, None, None, None, 18],
-     [None, 3, None, 8, None, None, None, 19],
-     [5, 4, 10, 9, None, None, None, 20],
-     [None, None, None, 27, None, None, None, 21],
-     [None, None, None, 26, 25, 24, 23, 22]]
-
-projection = 'orthographic'
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
 
 import pandas as pd
-us_cities = pd.read_csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+from plotly.tools import mpl_to_plotly
+import matplotlib.pyplot as plt
+import plotly.graph_objs as go
+from mpl_toolkits.basemap import Basemap
 
-@app.callback(Output("graph", "figure"), [Input(d, "value") for d in dimensions])
-def make_figure():
-    fig = go.Figure()
+df = pd.read_csv(
+    'https://raw.githubusercontent.com/plotly/'
+    'datasets/master/gapminderDataFiveYear.csv')
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+
+app.layout = html.Div([
+    dcc.Graph(id='graph-with-slider'),
+    dcc.Slider(
+        id='year-slider',
+        min=df['year'].min(),
+        max=df['year'].max(),
+        value=df['year'].min(),
+        marks={str(year): str(year) for year in df['year'].unique()},
+        step=None
+    )
+])
+
+
+import pandas as pd
+quakes = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
+
+
+######################### GIM TEC MAP ############################
+
+def create_matrix_z():
+    z = []
+    for i in range(73): 
+        z.append(np.arange(0,73))
+    return (np.asarray(z))
+
+@app.callback(
+    Output('graph-with-slider', 'figure'),
+    [Input('year-slider', 'value')])
+def update_figure(selected_year):
+    #Z = create_matrix_z()
+    #m = Basemap(projection='cyl',llcrnrlat=-87.5,urcrnrlat=87.5, llcrnrlon=-180,urcrnrlon=180,resolution='c') 
+    #x, y = m(X, Y)    
+
+    #fig = plt.figure() 
+    ##fig = plt.figure(figsize=(15,7)) 
+    ##m.fillcontinents(color='gray',lake_color='gray') 
+    #m.drawcoastlines() 
+    #m.drawparallels(np.arange(87.5,90,-2.5)) 
+    #m.drawmeridians(np.arange(-180,185,5)) 
+    #m.drawmapboundary(fill_color='white') 
+    #cs = m.contourf(x,y,Z,73) 
+    #plt.title('Monthly mean SAT')                                                                               
+
+    #plotly_fig = mpl_to_plotly(fig)
+
+    
+
+
+    import plotly.express as px
+    mapbox_access_token = open(".mapbox_token").read()
+    fig = go.Figure(go.Densitymapbox(lat=lat, lon=lon, z=depth,radius=10))
+    fig.update_layout(mapbox_style="stamen-terrain", mapbox_center_lon=-180)
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+
+    
     return fig
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run_server(debug=True)
