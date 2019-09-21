@@ -1,16 +1,19 @@
 
 import numpy as np
 import random
+import pandas as pd
 
 #y = np.arange(90,-92.5,-2.5)
 
 x = [np.arange(-180,185,5) for i in range(73)]
-y = [np.arange(90,-92.5,-2.5) for i in range(73)]
-z = [random.randrange(30,50) for p in range(0,(len(x)*len(y)))] 
+y = [np.arange(90,-92.5,-2.5) for i in range(71)]
 
+data = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/depth.csv")
 lon = np.asarray(x)
 lat = np.asarray(y)
-depth = np.asarray(z)
+#depth = np.asarray(z)
+depth = data[:5184]
+depth = depth.values
 
 # Transpose lat, lat.T
 lat = lat.T
@@ -27,12 +30,8 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-import pandas as pd
-from plotly.tools import mpl_to_plotly
-import matplotlib.pyplot as plt
 import plotly.graph_objs as go
 from mpl_toolkits.basemap import Basemap
-import plotly.express as px
 
 df = pd.read_csv(
     'https://raw.githubusercontent.com/plotly/'
@@ -55,13 +54,12 @@ app.layout = html.Div([
 ])
 
 
-import pandas as pd
 quakes = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
 
 
 ######################### GIM TEC MAP ############################
 
-m = Basemap(projection='merc', area_thresh=0.1)
+m = Basemap(projection='merc', area_thresh=0.1, resolution='i')
 
 def make_scatter(x,y):
     return go.Scattergl(
@@ -98,34 +96,40 @@ def get_country_traces():
     N_poly = len(poly_paths)
     return polygons_to_traces(poly_paths, N_poly)
 
+font_dict = dict(
+    family="Courier New, monospace",
+    size=24,
+    color="#7f7f7f"
+)
+
+colorbar_dict = dict(
+    title='TEC',
+    titleside='right',
+    titlefont=font_dict
+)
+
 
 @app.callback(
     Output('graph-with-slider', 'figure'),
     [Input('year-slider', 'value')])
 def update_figure(selected_year):
-    #Z = create_matrix_z()
-    #m = Basemap(projection='cyl',llcrnrlat=-87.5,urcrnrlat=87.5, llcrnrlon=-180,urcrnrlon=180,resolution='c') 
-    #x, y = m(X, Y)    
 
-    #fig = plt.figure() 
-    ##fig = plt.figure(figsize=(15,7)) 
-    ##m.fillcontinents(color='gray',lake_color='gray') 
-    #m.drawcoastlines() 
-    #m.drawparallels(np.arange(87.5,90,-2.5)) 
-    #m.drawmeridians(np.arange(-180,185,5)) 
-    #m.drawmapboundary(fill_color='white') 
-    #cs = m.contourf(x,y,Z,73) 
-    #plt.title('Monthly mean SAT')                                                                               
-
-    #plotly_fig = mpl_to_plotly(fig)
-    #df = pd.DataFrame(dict(x=lon, y=lat,z=depth))
-    #trace1 = px.scatter_3d(df, x='x', y='y', z='z', color='z')
+#    ############################## Basemap plot works
     trace1 = go.Contour(
         z = depth,
         x = lon,
         y = lat,
         colorscale="Jet",
         zauto=True,
+        contours=dict(
+            coloring="heatmap",
+            showlabels=True,
+            labelfont=dict(
+                size=12,
+                color='white'
+            )
+        ),
+        colorbar=colorbar_dict
         #zmin=0,
         #zmax=400
     )
@@ -134,24 +138,29 @@ def update_figure(selected_year):
     data = ([trace1] + traces_cc)
     layout = go.Layout(
         autosize=True,
-        width=1080,
-        height=720,
+        width=1920,
+        height=1080,
     )
     fig = go.Figure(data=data, layout=layout)
-    
-
-
-    
-
-    
-
-
-    #import plotly.express as px
-    #mapbox_access_token = open(".mapbox_token").read()
-    #fig = go.Figure(go.Densitymapbox(lat=lat, lon=lon, z=depth,radius=10))
-    #fig.update_layout(mapbox_style="stamen-terrain", mapbox_center_lon=-180)
-    #fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-
+    fig.update_layout(
+        title=go.layout.Title(
+            text="Total Electron Content",
+            xref="paper",
+            font=font_dict
+        ),
+        xaxis=go.layout.XAxis(
+            title=go.layout.xaxis.Title(
+                text="Longitud",
+                font=font_dict
+            )
+        ),
+        yaxis=go.layout.YAxis(
+            title=go.layout.yaxis.Title(
+                text="Latitud",
+                font=font_dict
+            )
+        )
+    )
     
     return fig
 
