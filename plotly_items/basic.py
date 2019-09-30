@@ -1,29 +1,5 @@
-
 import numpy as np
-import random
 import pandas as pd
-
-#y = np.arange(90,-92.5,-2.5)
-
-x = [np.arange(-180,185,5) for i in range(73)]
-y = [np.arange(90,-92.5,-2.5) for i in range(71)]
-
-data = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/depth.csv")
-lon = np.asarray(x)
-lat = np.asarray(y)
-#depth = np.asarray(z)
-depth = data[:5184]
-depth = depth.values
-
-# Transpose lat, lat.T
-lat = lat.T
-
-# Flatten the arrays
-lon = lon.flatten()
-lat = lat.flatten()
-depth = depth.flatten()
-
-X, Y = np.meshgrid(x,y)
 
 import dash
 import dash_core_components as dcc
@@ -32,6 +8,13 @@ from dash.dependencies import Input, Output
 
 import plotly.graph_objs as go
 from mpl_toolkits.basemap import Basemap
+
+headers = ['time_stamp', 'latitud', 'longitud', 'tec_value']
+data = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/test.csv", names=headers)
+map_data = data[data['time_stamp']=="2012-12-31T10:00:00.0"]
+lat = map_data['latitud'].values
+lon = map_data['longitud'].values
+depth = map_data['tec_value'].values
 
 df = pd.read_csv(
     'https://raw.githubusercontent.com/plotly/'
