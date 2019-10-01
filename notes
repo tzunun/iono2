@@ -1,0 +1,35 @@
+Project based on a paper that analyzed 
+				OLR outgoing earth radiation
+								(infra-red 10-13micro m)
+				GPS/TEC
+								Ionospheric variability
+				Thermodynamics properties in the lower atmosphere
+								Ambient temperature and relative humidity
+												multiyer day-by-day counts of nighttime temperatures
+												used to compute daily temperature varialtions near the vecinity
+												of the earthquake
+												current value and the multiyear mean of air temperature
+												variability. Identify when the max tends to occur prior to
+												earthquake.
+Earthquake dates
+				April 25
+				May 12
+
+				OLR
+								April 21-22
+								May 3-4
+				GPS/TEC
+								April 21
+												Negative and positive anomalies
+								April 24 
+								
+				Temperature/Humidity
+								Four years nighttime temp data to obtain average change
+
+				Space Weather has to be taken into account in order to not affect the
+				calculations.
+
+Differential GIM maps have to be build to show the anomalies
+				Analyze Delta Tec variations of the earthquake periods
+
+
