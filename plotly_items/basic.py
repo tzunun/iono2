@@ -9,35 +9,22 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 from mpl_toolkits.basemap import Basemap
 
-headers = ['time_stamp', 'latitud', 'longitud', 'tec_value']
-data = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/test.csv", names=headers)
-map_data = data[data['time_stamp']=="2012-12-31T10:00:00.0"]
-lat = map_data['latitud'].values
-lon = map_data['longitud'].values
-depth = map_data['tec_value'].values
+columns = ['time_stamp', 'latitud', 'longitud', 'tec_value']
+df = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/test.csv", names=columns)
 
-df = pd.read_csv(
-    'https://raw.githubusercontent.com/plotly/'
-    'datasets/master/gapminderDataFiveYear.csv')
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
-    dcc.Slider(
-        id='year-slider',
-        min=df['year'].min(),
-        max=df['year'].max(),
-        value=df['year'].min(),
-        marks={str(year): str(year) for year in df['year'].unique()},
-        step=None
+    dcc.Dropdown(
+        id='dropdown',
+        options=[{'label':i, 'value': i} for i in df['time_stamp'].unique()],
+        value='2012-12-31T00:00:00.0'
     ),
-    dcc.Graph(id='graph-with-slider')
+    dcc.Graph(id='map')
 ])
-
-
-quakes = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/earthquakes-23k.csv')
 
 
 ######################### GIM TEC MAP ############################
@@ -52,7 +39,6 @@ def make_scatter(x,y):
         line=go.scattergl.Line(color='black'),
         name=' '
     )
-
 
 def polygons_to_traces(poly_paths, N_poly):
     traces = []
@@ -91,15 +77,22 @@ colorbar_dict = dict(
     titlefont=font_dict
 )
 
+############### Update Graph ##########
 
 @app.callback(
-    Output('graph-with-slider', 'figure'),
-    [Input('year-slider', 'value')])
-def update_figure(selected_year):
+    Output('map', 'figure'),
+    [Input('dropdown', 'value')])
+def update_figure(value):
 
-#    ############################## Basemap plot works
+    map_df = df[df['time_stamp']==value]
+    lat = map_df['latitud'].values
+    lon = map_df['longitud'].values
+    tec_values = map_df['tec_value'].values
+
+############### Basemap plot works ################
+
     trace1 = go.Contour(
-        z = depth,
+        z = tec_values,
         x = lon,
         y = lat,
         colorscale="Jet",
@@ -113,17 +106,16 @@ def update_figure(selected_year):
             )
         ),
         colorbar=colorbar_dict
-        #zmin=0,
-        #zmax=400
     )
 
     traces_cc = get_coastline_traces()+get_country_traces()
     data = ([trace1] + traces_cc)
     layout = go.Layout(
         autosize=True,
-        width=1920,
-        height=1080,
+        width=1080,
+        height=720,
     )
+
     fig = go.Figure(data=data, layout=layout)
     fig.update_layout(
         title=go.layout.Title(
