@@ -12,10 +12,7 @@ from mpl_toolkits.basemap import Basemap
 columns = ['time_stamp', 'latitud', 'longitud', 'tec_value']
 df = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/test.csv", names=columns)
 
-
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__)
 
 app.layout = html.Div([
     dcc.Dropdown(
@@ -77,6 +74,8 @@ colorbar_dict = dict(
     titlefont=font_dict
 )
 
+traces_cc = get_coastline_traces()+get_country_traces()
+
 ############### Update Graph ##########
 
 @app.callback(
@@ -108,7 +107,6 @@ def update_figure(value):
         colorbar=colorbar_dict
     )
 
-    traces_cc = get_coastline_traces()+get_country_traces()
     data = ([trace1] + traces_cc)
     layout = go.Layout(
         autosize=True,
