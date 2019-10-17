@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 import dash
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
@@ -12,17 +13,72 @@ from mpl_toolkits.basemap import Basemap
 columns = ['time_stamp', 'latitud', 'longitud', 'tec_value']
 df = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/test.csv", names=columns)
 
-app = dash.Dash(__name__)
+navbar = dbc.NavbarSimple(
+        children=[
+            dbc.NavItem(dbc.NavLink("Link", href="#")),
+            dbc.DropdownMenu(
+            nav=True,
+            in_navbar=True,
+            label="Menu",
+            children=[
+                dbc.DropdownMenuItem("Entry 1"),
+                dbc.DropdownMenuItem("Entry 2"),
+                dbc.DropdownMenuItem(divider=True),
+                dbc.DropdownMenuItem("Entry 3"),
+                ],
+            ),
+        ],
+        brand="Earthquake Precursor Project",
+        brand_href="#",
+        sticky="top",
+    )
 
-app.layout = html.Div([
-    dcc.Dropdown(
-        id='dropdown',
-        options=[{'label':i, 'value': i} for i in df['time_stamp'].unique()],
-        value='2012-12-31T00:00:00.0'
-    ),
-    dcc.Graph(id='map')
-])
+body = dbc.Container(
+        [
+            dbc.Row(
+                [
+                    dbc.Col(
+                        [
+                            html.H2("2-Hour Maps"),
+                            html.P("""Choose a different time from the dropdown menu"""),
+                            dcc.Dropdown(
+                                id='dropdown',
+                                options=[{'label':i, 'value': i} for i in df['time_stamp'].unique()],
+                                value='2012-12-31T00:00:00.0'
+                            )
+                        ]
+                    )  # End of Dropdown Col
+                ]  
+            ), # End of Row
+            dbc.Row(
+               [
+                   html.H2("Ionospheric Anomalies"),
+                   html.P("""
+                       Detection of signals near earthquake areas, using various
+                       sensing divices.
+                   """
+                   ),
+                   dbc.Button("View details", color="secondary"),
+                   ],
+               ), # End of Heading Col           
+            dbc.Row(children = [ # Children inherit sizing from the parents
+                    dbc.Col(
+                        [
+                            html.H2("Graph"),
+                            dcc.Graph(id='map'
+                                    )
+                        ]
+                    )
+                    ]
+                )
+            ], 
+        fluid=True
+        #className="mt-4",
+)
 
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.layout = html.Div([navbar, body])
 
 ######################### GIM TEC MAP ############################
 
@@ -74,6 +130,7 @@ colorbar_dict = dict(
     titlefont=font_dict
 )
 
+# Generate map traces once!
 traces_cc = get_coastline_traces()+get_country_traces()
 
 ############### Update Graph ##########
@@ -110,8 +167,8 @@ def update_figure(value):
     data = ([trace1] + traces_cc)
     layout = go.Layout(
         autosize=True,
-        width=1080,
-        height=720,
+        #width=1080,
+        #height=720,
     )
 
     fig = go.Figure(data=data, layout=layout)
