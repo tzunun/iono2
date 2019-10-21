@@ -12,4 +12,3 @@ ELAPSED_TIME=$(($SECONDS - $START_TIME))
 TOTAL_DOWNLOADED_FILES=$(wc -l ../ionex_files_urls.txt) 
 
 echo "$TOTAL_DOWNLOADED_FILES were downloaded in $(($ELAPSED_TIME/60)) minutes $(($ELAPSED_TIME%60)) seconds."
- 
