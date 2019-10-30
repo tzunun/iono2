@@ -91,7 +91,8 @@ def make_scatter(x,y):
         y=y,
         mode="lines",
         line=go.scattergl.Line(color="black"),
-        name=" "
+        name=" ",
+        showlegend=False
     )
 
 def polygons_to_traces(poly_paths, N_poly):
