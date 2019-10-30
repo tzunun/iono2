@@ -10,7 +10,7 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 from mpl_toolkits.basemap import Basemap
 
-columns = ['time_stamp', 'latitud', 'longitud', 'tec_value']
+columns = ["time_stamp", "latitud", "longitud", "tec_value"]
 df = pd.read_csv("/home/antonio/Repos/iono2/tec_csv_files/jplg0010.00i.csv", names=columns)
 
 navbar = dbc.NavbarSimple(
@@ -42,16 +42,16 @@ body = dbc.Container(
                             html.H2("2-Hour Maps"),
                             html.P("""Choose a different time from the dropdown menu"""),
                             dcc.Dropdown(
-                                id='dropdown',
-                                options=[{'label':i, 'value': i} for i in df['time_stamp'].unique()],
-                                value='2012-12-31T00:00:00.0'
+                                id="dropdown",
+                                options=[{"label":i, "value": i} for i in df["time_stamp"].unique()],
+                                value="2000-01-01T01:00:00.0"
                             )
                         ]
                     )  # End of Dropdown Col
                 ]  
             ), # End of Row
             dbc.Row(
-               [
+                   [
                    html.H2("Ionospheric Anomalies"),
                    html.P("""
                        Detection of signals near earthquake areas, using various
@@ -65,16 +65,15 @@ body = dbc.Container(
                     dbc.Col(
                         [
                             html.H2("Graph"),
-                            dcc.Graph(id='map'
-                                    )
+                            dcc.Graph(id="map")
                         ]
                     )
                     ]
                 )
-            ], 
+        ], 
         fluid=True
         #className="mt-4",
-)
+)  # End of dbc.Container
 
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -82,15 +81,17 @@ app.layout = html.Div([navbar, body])
 
 ######################### GIM TEC MAP ############################
 
-m = Basemap(projection='merc', area_thresh=0.1, resolution='i')
+#m = Basemap(projection="merc", area_thresh=0.1, resolution="i")
+m = Basemap()
+#m = Basemap(projection="mall", celestial=True, llcrnrlat=-87.5, urcrnrlat=87.5, llcrnrlon=-180, urcrnrlon=180, resolution="i")
 
 def make_scatter(x,y):
     return go.Scattergl(
         x=x,
         y=y,
-        mode='lines',
-        line=go.scattergl.Line(color='black'),
-        name=' '
+        mode="lines",
+        line=go.scattergl.Line(color="black"),
+        name=" "
     )
 
 def polygons_to_traces(poly_paths, N_poly):
@@ -109,7 +110,7 @@ def polygons_to_traces(poly_paths, N_poly):
 #Function generating coastline lon/lat traces
 def get_coastline_traces():
     poly_paths = m.drawcoastlines().get_paths()
-    N_poly = 91 
+    N_poly = 91  # use only the 91st biggest coastlines (i.e no rivers)
     return polygons_to_traces(poly_paths, N_poly)
 
 # Function generating country lon/lat traces
@@ -125,8 +126,8 @@ font_dict = dict(
 )
 
 colorbar_dict = dict(
-    title='TEC',
-    titleside='right',
+    title="TEC",
+    titleside="right",
     titlefont=font_dict
 )
 
@@ -136,14 +137,14 @@ traces_cc = get_coastline_traces()+get_country_traces()
 ############### Update Graph ##########
 
 @app.callback(
-    Output('map', 'figure'),
-    [Input('dropdown', 'value')])
+    Output("map", "figure"),
+    [Input("dropdown", "value")])
 def update_figure(value):
 
-    map_df = df[df['time_stamp']==value]
-    lat = map_df['latitud'].values
-    lon = map_df['longitud'].values
-    tec_values = map_df['tec_value'].values
+    map_df = df[df["time_stamp"]==value]
+    lat = map_df["latitud"].values
+    lon = map_df["longitud"].values
+    tec_values = map_df["tec_value"].values
 
 ############### Basemap plot works ################
 
@@ -155,27 +156,33 @@ def update_figure(value):
         zauto=True,
         contours=dict(
             coloring="heatmap",
-            showlabels=True,
+            showlabels=False,
             labelfont=dict(
                 size=12,
-                color='white'
+                color="white"
             )
         ),
         colorbar=colorbar_dict
     )
-
+    
     data = ([trace1] + traces_cc)
+    
+
     layout = go.Layout(
         autosize=True,
-        #width=1080,
-        #height=720,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor='rgba(0,0,0,0)'
+        #width=540,
+        #height=300,
     )
 
     fig = go.Figure(data=data, layout=layout)
+
     fig.update_layout(
         title=go.layout.Title(
             text="Total Electron Content",
             xref="paper",
+            yref="paper",
             font=font_dict
         ),
         xaxis=go.layout.XAxis(
@@ -194,5 +201,5 @@ def update_figure(value):
     
     return fig
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=True)
