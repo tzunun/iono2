@@ -3,4 +3,8 @@
 *get-log*
 *.vscode/
 **/ionex_files/*
-*jplg**
+**/ionex_files.bk/*
+**/Temp*/*
+**/tec_*/jplg*
+**test.csv*
+**ipynb_checkpoints**

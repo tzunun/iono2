@@ -11,7 +11,7 @@ import plotly.graph_objs as go
 from mpl_toolkits.basemap import Basemap
 
 columns = ['time_stamp', 'latitud', 'longitud', 'tec_value']
-df = pd.read_csv("/home/antonio/Repos/iono2/julia_scripts/test.csv", names=columns)
+df = pd.read_csv("/home/antonio/Repos/iono2/tec_csv_files/jplg0010.00i.csv", names=columns)
 
 navbar = dbc.NavbarSimple(
         children=[
