@@ -44,9 +44,9 @@ body = dbc.Container(
                             dcc.Dropdown(
                                 id="dropdown",
                                 options=[{"label":i, "value": i} for i in df["time_stamp"].unique()],
-                                value="2000-01-01T01:00:00.0"
+                                value="2000-01-01T01:00:00.0",
                             )
-                        ]
+                        ], style={'marginBottom':'2em'}
                     )  # End of Dropdown Col
                 ]  
             ), # End of Row
@@ -61,15 +61,18 @@ body = dbc.Container(
                    dbc.Button("View details", color="secondary"),
                    ],
                ), # End of Heading Col           
-            dbc.Row(children = [ # Children inherit sizing from the parents
-                    dbc.Col(
-                        [
-                            html.H2("Graph"),
-                            dcc.Graph(id="map")
-                        ]
-                    )
-                    ]
-                )
+            #dbc.Row(children = [ # Children inherit sizing from the parents
+            #        dbc.Col(
+            #            [
+            #                html.H2("Graph"),
+            #                dcc.Graph(id="map")
+            #            ]
+            #        )
+            #        ]
+            #    )
+            dbc.Row(children=[
+                dbc.Col(html.Div(dcc.Graph(id="map",style={'width':'95vw','height':'60vh'})), md=12, lg=12, sm=12)
+            ], align="center" )  # Align the row center
         ], 
         fluid=True
         #className="mt-4",
