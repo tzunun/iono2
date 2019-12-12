@@ -2,8 +2,12 @@
 *.mapbox_token*
 *get-log*
 *.vscode/
-**/ionex_files/*
-**/ionex_files.bk/*
+**/ionex_jplg/*
+**/ionex_jplg_bk/*
+**/empty_ionex_jplg/*
+**/ionex_esag/*
+**/ionex_esage_bk/*
+**/empty_ionex_esage/*
 **/Temp*/*
 **/tec_*/jplg*
 **test.csv*
