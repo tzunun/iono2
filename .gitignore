@@ -2,12 +2,15 @@
 *.mapbox_token*
 *get-log*
 *.vscode/
+*darksky_api.txt
 **/ionex_jplg/*
 **/ionex_jplg_bk/*
 **/empty_ionex_jplg/*
 **/ionex_esag/*
-**/ionex_esage_bk/*
-**/empty_ionex_esage/*
+**/ionex_esag_bk/*
+**/tec_csv***
+**/tec_tables***
+**/empty_ionex_esag/*
 **/Temp*/*
 **/tec_*/jplg*
 **test.csv*
