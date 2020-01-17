@@ -21,3 +21,11 @@ Anaconda 3.7
 
 	if using ubuntu
 	sudo apt install aria2
+
+**Python 3.6 is required for the iono environment**
+conda create -n iono python=3.6
+pip install -r requirements.txt
+
+**Downloading the data**
+mkdir esag_ionex
+sh shell_scripts/download_files.sh
