@@ -8,6 +8,8 @@ Historical Weather Data
 
 **Install**
 Anaconda 3.7
+or
+Miniconda 3.7
 
 **Terminology**
 
@@ -23,9 +25,29 @@ Anaconda 3.7
 	sudo apt install aria2
 
 **Python 3.6 is required for the iono environment**
-conda create -n iono python=3.6
-pip install -r requirements.txt
+YML file is provided (iono.yml) you will have to use conda or miniconda.
+The conda-forge channel will be the source of the libraries on this
+environment. 
+
+conda env create -f iono.yml
 
 **Downloading the data**
 mkdir esag_ionex
 sh shell_scripts/download_files.sh
+
+**Extracting the Data**
+Files are compressed; with a .Z ending
+run the following command from directory containing the downloaded esag files.
+
+uncompress esag*
+
+
+**Transforming the Data**
+Since this a project uses both Julia and Python3, Julia is used for the
+computational intensive tasks and Python3 mostly for the DASH/Flask
+application.  In the future Genie.jl might be used to replace the Api/App
+functionallity (Dash/Flask)
+
+run the julia.ipynb notebook using jupyter lab or notebook.
+The notebook will basically create the CSV and Table files needed to create
+the database.  The table files are needed by JuliaDB

@@ -2,6 +2,9 @@
 
 #time aria2c -d ionex_files/ -i ionex_files_urls.txt -j 120 --c true
 
+#Create directory to store the downloaded files
+mkdir ../ionex_esag
+
 START_TIME=$SECONDS
 URL_FILE=../ionex_urls_esag.txt
 DOWNLOAD_LOCATION=../ionex_esag
