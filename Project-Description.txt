@@ -1,0 +1,123 @@
+Ionospheric Anomalies as Percursor Signals for Earthquakes.
+
+
+TL/DR:
+Even when replicating a published paper for a Data Science project does not guarantee that the project will go smooth.
+Some of the inconsistencies of large datasets will only surface when you run a program to transform the data.  Having multiple sources for the data is a blessing when the data is not only
+incomplete but missing altogether. Knowledge of Unix/Linux is an advantage when working on such projects if anything for the large number of utilities that can be used to obtain, transform,
+data.  A web search for a tool that does x should always be an option, meaning I wonder if there is a tool to help me download all these files faster.  Sometimes the official documentation for 
+libraries (Plotly) is not up to date, and the best approach to figure out how to create a visualization is to find code that does something similar to what you want and experiment from there.
+
+Learning a new programing language is easier when you write code for a project that you find interesting.
+
+This project is based on a research paper that I found on the website arxiv.org
+https://arxiv.org/pdf/1508.01805.pdf The idea is to look at atmospheric data from three
+different sources that shows correlations between observed atmospheric anomalies and Earthquakes.
+
+
+####################### Data Science Process #####################
+
+                      # Prepare #
+
+Goal:
+
+To replicate the findings on paper on a larger scale.  Looking for patterns that Signal
+a possile earthquake from magnitud 5 in a 20 year period.
+
+Create a web application to iteractively see the earthquake and atmosphecir readings from
+a twenty year period.  
+
+Possible prediction of earthquake as a way to check the model accuracy.
+
+Use the Julia programing language to accomplish most of the task, write a web application using 
+the Dash Python library to display the results as well as the visualizations.
+
+Data:
+
+Because I am combining multiple data sets, I know that I have to pay close attention on how will these integrate correctly; for this project it is based on 
+the date time.
+    
+The majority of the data will be provided by the Global Navigation Satellite System.  Initially the data
+used was provided by the Jet Propulsion Laboratory, but the data as missing many files
+some of the files were incomplete and/or the data was not properly cleaned before adding iteractively
+to a file; for example there were fields that had to have a number but had a number with
+letters such as 532jkljkl.
+
+The historical earthquake data comes from United States Geolocical Survey.
+
+The weather weather data is obtained from DarkSky using an interface in order to be able
+to request historical data associated with ambient temperatures at around dawn and dusk
+for the area near the earthquake.
+
+The fourth data source is from the Earth System Research Laboratory which is part of
+the National Oceanic and Atmospheric Administration.  This is the earth radiation that is reflected to space.
+
+Exploration:
+
+The easiest dataset to acquire is the historical earthquake data.  The Search Earthquake Catalog
+provides an easy way to obtain the data in a CSV format.
+
+The Outgoing Earth Radiation data was also easy to find and the only dificult part about it is the
+data format (NetCDF).
+
+The weather data was a matter of getting familiar of how the DarkSky website expects the requests for the data
+to be formated as.  The return is a JSON format and from there basically write a program to make the requests.
+
+The data dealing with the contents of electrons in the atmosphere was the most challenging to work with.
+Find the location of the data, the way the files names were written.  I wrote a program that created the name of the 
+files that I need to download.  Initially I used the wget program to download the data, but after the first 300 files
+I decided to look for other alternatives to download the data faster.  I eventually found the aria2 program which 
+allowed me to download the 7305 files in under three minutes from over two hours.
+
+A command line (bash) script was used to download the Ionospheric Data.
+
+Data Wrangling:
+
+The Earthquake historical datas is a plain CSV file basically an excel sheet.
+
+The OLR or Earth radiation data is one large file.  The only obstacle was the unfamiliarity with the NetCDF format.
+
+The weather data (Temperature) provided by DarkSky is basically learning how the data
+request and response are structured.  After obtaining a key to allow a program to make
+continuous requests for weather data. The challenging part was to write the program because
+the goal is to request historical and current (at the time of the earthquake) temperature data.
+
+The Ionospheric data was the most challenging.  It was larger, some of the data was missing (complete days), some was incomplete (partial days) and the data
+sanitazion did not work when some of the data files were created because fields that were supposed to have numbers
+had a mixture of number and letters.  This was eventually found when extracting and transforming the data.  Some files were empty.
+after manually restarting the program from the point of failure and writing down the file's name the program would continue until it found the next
+faulty file.  When all of the complete files were processed I went back a looked at the files that had caused issues.
+Some of the files where smaller and some just had wrong information.
+
+The files that were causing issues were about 5% of the data.  I looked at ways of working with the missing data.
+fill in missing values, obmitting the data from those days from the other datasets.
+
+The dataset was obtained from JPL and I found that I could substitute the missing files from the European Space Agency Files.
+after a few itereations of this process I decided to use ESA data for the dataset and JPL for the missing
+files which in this case where about 1%. After extraction and transformation this dataset was over 16GB of individual
+csv files, I had thought about combining all the files into a single large one, but doing so will just add dimensions to dataset,
+will slow down the calculations and will use up RAM memory with data that is not releveant because not all days are needed in this case (possibly)
+
+A Jupyter Notebook was used to transform the data, another to obtain the weather data.
+
+Because of the 20 year scope of the dataset of this project, an issue that arouse was how to deal with data that is abnornal because
+of space weather, especifically speaking of coronal mass ejections or solar flares as this affects directly the Ionosphere.  
+(This is something that the authors of the research paper did not have to face)
+
+
+Software:
+    Julia for most of the computational tasks.
+    Python for Data visualizations(Plotly), web application(Dash)
+
+
+                      # Build #
+
+Plan:
+    Build a web application in order to observe the way the paper did its observations
+    tying all data and display the information dynamically.
+
+    -Option to change day of the map also.
+
+    Basically the user will pick an earthquake and the application will show what the 
+    values according to the research papers where and possible offer a similar solution by 
+    using my own observations and compare differences.

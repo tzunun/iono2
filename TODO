@@ -28,3 +28,17 @@ sunrise and sunset provided by weather api, data has to be saved as to not make 
 
   87.5-180.0 180.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
   30,30,30,30,30,30,29,29,29,29,28,28,28,27,27,27,27,26,26,26,26,25,25,25,25,25,25,25,25,25,25,25,26,26,26,26,27,27,27,27,28,28,28,29,29,29,29,30,30,30,30,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,30
+
+################ Dash ##########################
+
+When in fullscreen mode the TEC map is not proportional
+
+The selector should be either Date and choose either Earquake TEC map obviously the 
+earthquake lat, lon have to be plotted on the same map.
+Or choose TEC map with different hours.  The issue is calculating what hour to display for the
+TEC map that show earthquake.
+
+
+Map has to show current TEC for the earthquake as well as the new TEC map used by
+averaging out the data from previous days, years.  Same for temperature.  Maybe display
+a regular graph. Bar graph showing the difference.
