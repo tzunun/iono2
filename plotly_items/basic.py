@@ -9,9 +9,13 @@ from dash.dependencies import Input, Output
 
 import plotly.graph_objs as go
 from mpl_toolkits.basemap import Basemap
+from datetime import datetime as dt
 
 columns = ["time_stamp", "latitud", "longitud", "tec_value"]
-df = pd.read_csv("/home/antonio/Repos/iono2/tec_csv_esag/esag0010.00i.csv", names=columns)
+tec_file = "/home/antonio/Repos/iono2/tec_csv_esag/esag0010.10i.csv"
+df = pd.read_csv(tec_file, names=columns)
+initial_map = df["time_stamp"].unique()[0]   # Return the first map of that day
+
 
 navbar = dbc.NavbarSimple(
         children=[
@@ -33,23 +37,40 @@ navbar = dbc.NavbarSimple(
         sticky="top",
     )
 
+
 body = dbc.Container(
         [
             dbc.Row(
                 [
                     dbc.Col(
                         [
-                            html.H2("2-Hour Maps"),
-                            html.P("""Choose a different time from the dropdown menu"""),
-                            dcc.Dropdown(
-                                id="dropdown",
-                                options=[{"label":i, "value": i} for i in df["time_stamp"].unique()],
-                                value="2000-01-01T01:00:00.0",
-                            )
+                           html.H2("2-Hour Maps"),
+                           html.P("""Choose a different time from the dropdown menu"""),
+                           dcc.Dropdown(
+                               id="dropdown",
+                               #options=[{"label":i, "value": i} for i in df["time_stamp"].unique()],
+                               options = [{"label":i, "value": i} for i in df["time_stamp"].unique()],
+                               value = initial_map
+                           )
+                       ], style={'marginBottom':'2em'}
+                    ), # End of Dropdown Col
+                     dbc.Col(
+                        [
+                            html.H2("Daily TEC Maps"),
+                            html.P("""Choose a different date from the dropdown menu"""),
+                            dcc.DatePickerSingle(
+                                id='date-picker',
+                                with_full_screen_portal=True,
+                                clearable=False,
+                                min_date_allowed=dt(2000,1,1),
+                                max_date_allowed=dt(2019,1,1),
+                                calendar_orientation='vertical',
+                                placeholder='Select a date',
+                                date='2001-1-1'
+                            ),
                         ], style={'marginBottom':'2em'}
-                    )  # End of Dropdown Col
-                ]  
-            ), # End of Row
+                    ) # End of Dropdown Col
+                ]), # End of Row
             dbc.Row(
                    [
                    html.H2("Ionospheric Anomalies"),
@@ -140,12 +161,38 @@ traces_cc = get_coastline_traces()+get_country_traces()
 
 ############### Update Graph ##########
 
+def format_days(day):
+    if len(day) == 1:
+        return ''.join(['00',day, '0'])
+    elif len(day) == 2:
+        return ''.join(['0', day, '0'])
+    elif len(day) == 3:
+        return ''.join([day, '0'])
+
+########### Update the date for the 2-hour dropdown ###########
+@app.callback(
+    Output("dropdown", "options"),
+    [Input("date-picker", "date")]
+    )
+def update_value(date):
+    global df
+    start_date = dt.strptime((''.join([date[:4], "-1-1"])), '%Y-%m-%d')
+    new_date = dt.strptime(date, '%Y-%m-%d')
+    delta =  new_date - start_date
+    day = format_days(str(delta.days + 1))
+    tec_file = ''.join(["/home/antonio/Repos/iono2/tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
+    df = pd.read_csv(tec_file, names=columns)
+    #initial_map = df["time_stamp"].unique()[0]   # Return 0the first map of that day
+    return [{"label":i, "value": i} for i in df["time_stamp"].unique()]
+
 @app.callback(
     Output("map", "figure"),
-    [Input("dropdown", "value")])
-def update_figure(value):
+    [Input("dropdown", "value")]
+    )
+def update_figure(dropdown_value):
+    global df
 
-    map_df = df[df["time_stamp"]==value]
+    map_df = df[df["time_stamp"]==dropdown_value]
     lat = map_df["latitud"].values
     lon = map_df["longitud"].values
     tec_values = map_df["tec_value"].values
