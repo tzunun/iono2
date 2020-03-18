@@ -73,7 +73,9 @@ A command line (bash) script was used to download the Ionospheric Data.
 
 Data Wrangling:
 
-The Earthquake historical datas is a plain CSV file basically an excel sheet.
+The Earthquake historical datas is a plain CSV file basically an excel sheet.  But upon doing data explorartion using the Pandas library
+I found that the correct name should be closer to sismic activity.  Along with Earthquakes the other two types of activities registered are nuclear explosions (In North Korea)
+and rock burst(I am unclear about the meaning of this).
 
 The OLR or Earth radiation data is one large file.  The only obstacle was the unfamiliarity with the NetCDF format.
 

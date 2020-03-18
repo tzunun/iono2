@@ -44,20 +44,8 @@ body = dbc.Container(
                 [
                     dbc.Col(
                         [
-                           html.H2("2-Hour Maps"),
-                           html.P("""Choose a different time from the dropdown menu"""),
-                           dcc.Dropdown(
-                               id="dropdown",
-                               #options=[{"label":i, "value": i} for i in df["time_stamp"].unique()],
-                               options = [{"label":i, "value": i} for i in df["time_stamp"].unique()],
-                               value = initial_map
-                           )
-                       ], style={'marginBottom':'2em'}
-                    ), # End of Dropdown Col
-                     dbc.Col(
-                        [
                             html.H2("Daily TEC Maps"),
-                            html.P("""Choose a different date from the dropdown menu"""),
+                            html.P("""Choose a date from the menu"""),
                             dcc.DatePickerSingle(
                                 id='date-picker',
                                 with_full_screen_portal=True,
@@ -69,7 +57,20 @@ body = dbc.Container(
                                 date='2001-1-1'
                             ),
                         ], style={'marginBottom':'2em'}
+                    ), # End of Dropdown Col
+                    dbc.Col(
+                        [
+                           html.H2("2-Hour Maps"),
+                           html.P("""Choose a time from the dropdown menu"""),
+                           dcc.Dropdown(
+                               id="dropdown",
+                               #options=[{"label":i, "value": i} for i in df["time_stamp"].unique()],
+                               options = [{"label":i, "value": i} for i in df["time_stamp"].unique()],
+                               value = initial_map
+                           )
+                       ], style={'marginBottom':'2em'}
                     ) # End of Dropdown Col
+
                 ]), # End of Row
             dbc.Row(
                    [
