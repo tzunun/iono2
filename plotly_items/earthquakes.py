@@ -14,7 +14,7 @@ from datetime import datetime as dt
 earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitude"]
 earthquakes_file = "/home/antonio/Repos/iono2/earthquakes_csv/1999_2017_eq.csv"
 earthquakes_df = pd.read_csv(earthquakes_file, names=earthquakes_columns)
-earthquake_coords = []
+earthquakes_coords = []
 earthquakes_date = '1999-12-31'
 
 tec_columns = ["time_stamp", "latitude", "longitude", "tec_value"]
@@ -166,8 +166,7 @@ colorbar_dict = dict(
 # Generate map traces once!
 traces_cc = get_coastline_traces()+get_country_traces()
 
-############### Update Graph ##########
-
+# Helper functions for dealing with dates and coordinates
 def format_days(day):
     if len(day) == 1:
         return ''.join(['00',day, '0'])
@@ -181,24 +180,20 @@ def update_eq_coords(date):
     # List of boolean values from comparing the first 10 characters of the date string in 'i' and comparing it to 'date'
     day_indexes = ([i[:10] == date for i in earthquakes_df['time_stamp']])
     return earthquakes_df[day_indexes]
-    #day_earthquakes = earthquakes_df[day_indexes]
-    #earthquake_coords = day_earthquakes[['latitude', 'longitude', 'magnitude']]
-    #earthquake_coords =  day_earthquakes[['latitude', 'longitude', 'magnitude']]
 
 
+############### Update Graph ##########
 
-
-
-########### Update the date for the 2-hour dropdown ###########
+# Update the date for the 2-hour dropdown #
 @app.callback(
     Output("dropdown", "options"),
     [Input("date-picker", "date")]
     )
 def update_value(date):
-    global tec_df, tec_columns, initial_map, earthquake_coords, earthquakes_date
-    earthquakes_date = date
+    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date
 
-    earthquake_coords = update_eq_coords(date)
+    earthquakes_date = date
+    earthquakes_coords = update_eq_coords(date)
 
     start_date = dt.strptime((''.join([date[:4], "-1-1"])), '%Y-%m-%d')
     new_date = dt.strptime(date, '%Y-%m-%d')
@@ -209,21 +204,21 @@ def update_value(date):
     initial_map = tec_df["time_stamp"].unique()[0]   # Return 0the first map of that day
     return [{"label":i, "value": i} for i in tec_df["time_stamp"].unique()]
 
+# Recreates the graph according to the chosen date in the 2-hour dropdown
 @app.callback(
     Output("map", "figure"),
     [Input("dropdown", "value")]
     )
 def update_figure(dropdown_value):
     global tec_df
-    global earthquake_coords
+    global earthquakes_coords
 
     map_df = tec_df[tec_df["time_stamp"]==dropdown_value]
     lat = map_df["latitude"].values
     lon = map_df["longitude"].values
     tec_values = map_df["tec_value"].values
     
-    earthquake_coords = update_eq_coords(earthquakes_date)
-    
+    earthquakes_coords = update_eq_coords(earthquakes_date)
 
 ############### Basemap plot works ################
 
@@ -257,13 +252,13 @@ def update_figure(dropdown_value):
 
     fig = go.Figure(data=data, layout=layout)
 
-    # Earthquakes plot for that day
+    # Plot earthquakes for that day
     fig.add_trace(
         go.Scatter(
-            x=earthquake_coords['longitude'],
-            y=earthquake_coords['latitude'],
+            x=earthquakes_coords['longitude'],
+            y=earthquakes_coords['latitude'],
             mode='markers',
-            hovertext=earthquake_coords['time_stamp']
+            hovertext=earthquakes_coords['time_stamp']
 
         )
     )
