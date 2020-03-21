@@ -94,6 +94,25 @@ Some of the files where smaller and some just had wrong information.
 The files that were causing issues were about 5% of the data.  I looked at ways of working with the missing data.
 fill in missing values, obmitting the data from those days from the other datasets.
 
+### Mising Data ###
+-Leave the missing data as missing.
+    Because this is not a categorical value, it was not an option
+-Remove missing Data.
+    Since 95% percent of the data was present it was ok.  To remove all those files.  However
+    some of those files missing were continuous dates, and part of the algorithm relies
+    on changes from day to day.  Then this could partially influence the outcome.
+-Fill in missing data.
+    Because of the amounts of information available, over 7200 files.  However there was a 
+    not always available 4th option
+Find an alternate source for the missing data or all the data.
+    Because the different Space Agencies member of GNSS provide the values for the
+    TEC data and the data is replicated among Agencies.  JPL not only hosts its own data
+    but also the data provided by ESA (European Space Angency)
+
+The initial data set used was from JPL with missing data from ESA, however after an examination.
+the data from ESA is has fewer missing days.  So the initial sources of data were reversed.
+missing data from JPL and data from ESA.
+
 The dataset was obtained from JPL and I found that I could substitute the missing files from the European Space Agency Files.
 after a few itereations of this process I decided to use ESA data for the dataset and JPL for the missing
 files which in this case where about 1%. After extraction and transformation this dataset was over 16GB of individual
