@@ -51,7 +51,7 @@ body = dbc.Container(
                     dbc.Col(
                         [
                             html.H2("TEC Maps 5 Days Prior to Earthquake"),
-                            html.P("""Choose a earhquqake date from the menu"""),
+                            html.P("""Choose an earthquake date from the menu"""),
                             dcc.DatePickerSingle(
                                 id='date-picker',
                                 with_full_screen_portal=True,
@@ -80,13 +80,12 @@ body = dbc.Container(
                 ]), # End of Row
             dbc.Row(
                    [
-                   html.H2("Ionospheric Anomalies"),
+                   html.H2("Earthquakes are shown as a cyan spots on the map"),
                    html.P("""
                        Detection of signals near earthquake areas, using various
                        sensing divices.
                    """
                    ),
-                   dbc.Button("View details", color="secondary"),
                    ],
                ), # End of Heading Col           
             #dbc.Row(children = [ # Children inherit sizing from the parents
@@ -99,7 +98,7 @@ body = dbc.Container(
             #        ]
             #    )
             dbc.Row(children=[
-                dbc.Col(html.Div(dcc.Graph(id="map",style={'width':'95vw','height':'60vh'})), md=12, lg=12, sm=12)
+                dbc.Col(html.Div(dcc.Graph(id="map",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12)
             ], align="center" )  # Align the row center
         ], 
         fluid=True
@@ -233,7 +232,7 @@ def update_figure(dropdown_value):
             showlabels=False,
             labelfont=dict(
                 size=12,
-                color="white"
+                color="black"
             )
         ),
         colorbar=colorbar_dict
@@ -245,9 +244,9 @@ def update_figure(dropdown_value):
     layout = go.Layout(
         autosize=True,
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor='rgba(0,0,0,0)'
-        #width=540,
-        #height=300,
+        plot_bgcolor='rgba(0,0,0,0)',
+        #width=1080,
+        height=720,
     )
 
     fig = go.Figure(data=data, layout=layout)
@@ -258,6 +257,7 @@ def update_figure(dropdown_value):
             x=earthquakes_coords['longitude'],
             y=earthquakes_coords['latitude'],
             mode='markers',
+            marker_color='rgba(100,100,110)',
             hovertext=earthquakes_coords['time_stamp']
 
         )
