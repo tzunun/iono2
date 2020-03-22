@@ -1,5 +1,10 @@
 import numpy as np
 import pandas as pd
+from datetime import datetime as dt
+import pathlib
+
+import plotly.graph_objs as go
+from mpl_toolkits.basemap import Basemap
 
 import dash
 import dash_bootstrap_components as dbc
@@ -7,18 +12,17 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-import plotly.graph_objs as go
-from mpl_toolkits.basemap import Basemap
-from datetime import datetime as dt
+# Current working directory, pwd in bash.
+cwd = pathlib.Path.cwd()
 
 earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitude"]
-earthquakes_file = "/home/antonio/Repos/iono2/earthquakes_csv/1999_2017_eq.csv"
+earthquakes_file = cwd / "earthquakes_csv/1999_2017_eq.csv"
 earthquakes_df = pd.read_csv(earthquakes_file, names=earthquakes_columns)
 earthquakes_coords = []
 earthquakes_date = '1999-12-31'
 
 tec_columns = ["time_stamp", "latitude", "longitude", "tec_value"]
-tec_file = "/home/antonio/Repos/iono2/tec_csv_esag/esag3650.99i.csv"
+tec_file = cwd / "tec_csv_esag/esag3650.99i.csv"
 tec_df = pd.read_csv(tec_file, names=tec_columns)
 initial_map = tec_df["time_stamp"].unique()[0]   # Return the first map of that day
 
@@ -189,7 +193,7 @@ def update_eq_coords(date):
     [Input("date-picker", "date")]
     )
 def update_value(date):
-    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date
+    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, cwd
 
     earthquakes_date = date
     earthquakes_coords = update_eq_coords(date)
@@ -198,7 +202,7 @@ def update_value(date):
     new_date = dt.strptime(date, '%Y-%m-%d')
     delta =  new_date - start_date
     day = format_days(str(delta.days + 1))
-    tec_file = ''.join(["/home/antonio/Repos/iono2/tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
+    tec_file = cwd /''.join(["tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
     tec_df = pd.read_csv(tec_file, names=tec_columns)
     initial_map = tec_df["time_stamp"].unique()[0]   # Return 0the first map of that day
     return [{"label":i, "value": i} for i in tec_df["time_stamp"].unique()]
