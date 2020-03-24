@@ -84,7 +84,7 @@ body = dbc.Container(
                 ]), # End of Row
             dbc.Row(
                    [
-                   html.H2("Earthquakes are shown as a cyan spots on the map"),
+                   html.H2("Earthquakes are shown as a white spots on the map"),
                    html.P("""
                        Detection of signals near earthquake areas, using various
                        sensing divices.
@@ -261,7 +261,14 @@ def update_figure(dropdown_value):
             x=earthquakes_coords['longitude'],
             y=earthquakes_coords['latitude'],
             mode='markers',
-            marker_color='rgba(100,100,110)',
+            marker=dict(
+                color='White',
+                opacity=0.8,
+                size=12,
+                line=dict(color='Magenta',
+                width=2),
+            ),
+            showlegend=True,
             hovertext=earthquakes_coords['time_stamp']
 
         )
