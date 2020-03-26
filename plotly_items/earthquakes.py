@@ -13,16 +13,16 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 # Current working directory, pwd in bash.
-cwd = pathlib.Path.cwd()
+path = pathlib.Path('~/Repos/iono2')
 
 earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitude"]
-earthquakes_file = cwd / "earthquakes_csv/1999_2017_eq.csv"
+earthquakes_file = path / "earthquakes_csv/1999_2017_eq.csv"
 earthquakes_df = pd.read_csv(earthquakes_file, names=earthquakes_columns)
 earthquakes_coords = []
 earthquakes_date = '1999-12-31'
 
 tec_columns = ["time_stamp", "latitude", "longitude", "tec_value"]
-tec_file = cwd / "tec_csv_esag/esag3650.99i.csv"
+tec_file = path / "tec_csv_esag/esag3650.99i.csv"
 tec_df = pd.read_csv(tec_file, names=tec_columns)
 initial_map = tec_df["time_stamp"].unique()[0]   # Return the first map of that day
 
@@ -103,7 +103,20 @@ body = dbc.Container(
             #    )
             dbc.Row(children=[
                 dbc.Col(html.Div(dcc.Graph(id="map",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12)
+            ], align="center" ),  # Align the row center
+            dbc.Row(
+                  [
+                  html.H2("Tec Animation"),
+                  html.P("""
+                        Animation of the TEC in a day.
+                  """
+                  ),
+                  ],
+              ), # End of Heading Col           
+           dbc.Row(children=[
+                dbc.Col(html.Div(dcc.Graph(id="animation",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12)
             ], align="center" )  # Align the row center
+
         ], 
         fluid=True
         #className="mt-4",
@@ -193,7 +206,7 @@ def update_eq_coords(date):
     [Input("date-picker", "date")]
     )
 def update_value(date):
-    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, cwd
+    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, path
 
     earthquakes_date = date
     earthquakes_coords = update_eq_coords(date)
@@ -202,7 +215,7 @@ def update_value(date):
     new_date = dt.strptime(date, '%Y-%m-%d')
     delta =  new_date - start_date
     day = format_days(str(delta.days + 1))
-    tec_file = cwd /''.join(["tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
+    tec_file = path /''.join(["tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
     tec_df = pd.read_csv(tec_file, names=tec_columns)
     initial_map = tec_df["time_stamp"].unique()[0]   # Return 0the first map of that day
     return [{"label":i, "value": i} for i in tec_df["time_stamp"].unique()]
@@ -255,7 +268,7 @@ def update_figure(dropdown_value):
 
     fig = go.Figure(data=data, layout=layout)
 
-    # Plot earthquakes for that day
+    #### Plot earthquakes for that day
     fig.add_trace(
         go.Scatter(
             x=earthquakes_coords['longitude'],
@@ -268,7 +281,7 @@ def update_figure(dropdown_value):
                 line=dict(color='Magenta',
                 width=2),
             ),
-            showlegend=True,
+            showlegend=False,
             hovertext=earthquakes_coords['time_stamp']
 
         )
@@ -296,6 +309,117 @@ def update_figure(dropdown_value):
     )
     
     return fig
+
+##### Animate the TEC values for the day
+
+def animate_tec():
+    global tec_file
+    hours = tec_df["time_stamp"].unique()
+    start_map_data = hours[0]
+
+    fig_dict = {
+        "data": [],
+        "layout": {},
+        "frames": []
+    }
+
+    fig_dict["layout"]["xaxis"] = {"range": [-180, 180], "title": "Longitude"}
+    fig_dict["layout"]["yaxis"] = {"range": [-90, 90], "title": "Longitude"}
+    fig_dict["layout"]["hovermode"] = "closest"
+    fig_dict["layout"]["sliders"] = {
+        "args": [
+            "transition", {
+                "duration": 400, 
+                "easing": "cubic-in-out"
+            }
+        ],
+        "initialValue": "1952",
+        "plotlycommand": "animate",
+        "values": earthquakes,
+        "visible": True
+    }
+    fig_dict["layout"]["updatemenus"] = [
+        {
+            "buttons": [
+                {
+                "args": [None, {"frame": {"duration": 500, "redraw": True},
+                "fromcurrent": True,
+                "transition": {"duration": 300, "easing": "quadratic-in-out"}
+                }],
+                "label": "Play",
+                "method": "animate"
+        },
+                {
+                "args": [None, {"frame": {"duration": 500, "redraw": True},
+                "fromcurrent": True,
+                "transition": {"duration": 0, "easing": "quadratic-in-out"}
+                }],
+                "label": "Pause",
+                "method": "animate"
+        },
+
+            ],
+            "direction": "right",
+            "pad": {"r": 10, "t":87},
+            "showactive": False,
+            "type": "buttons",
+            "x": 0.1,
+            "xachor": "right",
+            "y": 0,
+            "yanchor": "top"
+        }
+    ]
+    
+    sliders_dict = {
+        "active": 0,
+        "yanchor": "top",
+        "xanchor": "left",
+        "currentvalue": {
+            "font": {"size": 20},
+            "prefix": "Year:",
+            "visible": True,
+            "xanchor": "right"
+        },
+        "transition": {"duration": 300, "easing": "cubic-in-out"},
+        "pad": {"b": 10, "t":50},
+        "len": 0.9,
+        "x": 0.1,
+        "y": 0,
+        "steps": []
+    }
+
+    for hour in hours:
+        frame ={"data": [], "name": hour}
+        dataset_by_hour = tec_df[tec_df['time_stamp'] == hour]
+        data_dict = {
+            "x": dataset_by_hour['longitude'].values,
+            "y": dataset_by_hour['latitude'].values
+            }
+        
+    
+        frame["data"].append(data_dict)
+    
+        fig_dict["frames"].append(frame)
+        
+        slider_step = {"args":[
+            [hour], {"frame": {"duration": 300, "redraw":False},
+            "mode": "immediate",
+            "transition": {"duation":300}
+            }
+        ],
+        
+        "label":hour,
+        "method": "animate"
+        }
+    
+    sliders_dict["step"].append(slider_step)
+
+    fig_dict["layout"]["sliders"] = [sliders_dict]
+
+    fig = go.Figure(fig_dict)
+
+    fig.show()
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)

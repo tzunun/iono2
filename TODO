@@ -2,13 +2,13 @@ TODO for the IONO project
 
  * Scrape the data (Download the data)
 
-Parse Rinex to something easily stored
+* Parse Rinex to something easily stored
 
 save the data to a database
 
 Dash board design
 
-Dash build Skeleton
+*Dash build Skeleton
 
 Pytorch for deeplearning to train models
 				AutoML from H20
@@ -42,3 +42,15 @@ TEC map that show earthquake.
 Map has to show current TEC for the earthquake as well as the new TEC map used by
 averaging out the data from previous days, years.  Same for temperature.  Maybe display
 a regular graph. Bar graph showing the difference.
+
+##### Create dropdown with a list of earthquakes for that day.  Open a new page
+diplay information related.  To that earthquake.  
+Historical temps
+changes in TEC
+	Historical
+	within the  previous 10 days or so.
+OLR data
+	Historical
+	Within 10 previous days.
+
+#### This is a single page app.  Review designing singple page apps
