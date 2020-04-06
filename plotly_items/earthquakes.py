@@ -1,16 +1,9 @@
 import numpy as np
 import pandas as pd
-from datetime import datetime as dt
 import pathlib
-
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 from mpl_toolkits.basemap import Basemap
 
-import dash
-import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
 
 # Current working directory, pwd in bash.
 path = pathlib.Path('~/Repos/iono2')
@@ -24,107 +17,9 @@ earthquakes_date = '1999-12-31'
 tec_columns = ["time_stamp", "latitude", "longitude", "tec_value"]
 tec_file = path / "tec_csv_esag/esag3650.99i.csv"
 tec_df = pd.read_csv(tec_file, names=tec_columns)
-initial_map = tec_df["time_stamp"].unique()[0]   # Return the first map of that day
 
+hours = tec_df['time_stamp'].unique()
 
-navbar = dbc.NavbarSimple(
-        children=[
-            dbc.NavItem(dbc.NavLink("Link", href="#")),
-            dbc.DropdownMenu(
-            nav=True,
-            in_navbar=True,
-            label="Menu",
-            children=[
-                dbc.DropdownMenuItem("Entry 1"),
-                dbc.DropdownMenuItem("Entry 2"),
-                dbc.DropdownMenuItem(divider=True),
-                dbc.DropdownMenuItem("Entry 3"),
-                ],
-            ),
-        ],
-        brand="Earthquake Precursor Project",
-        brand_href="#",
-        sticky="top",
-    )
-
-
-body = dbc.Container(
-        [
-            dbc.Row(
-                [
-                    dbc.Col(
-                        [
-                            html.H2("TEC Maps 5 Days Prior to Earthquake"),
-                            html.P("""Choose an earthquake date from the menu"""),
-                            dcc.DatePickerSingle(
-                                id='date-picker',
-                                with_full_screen_portal=True,
-                                clearable=False,
-                                min_date_allowed=dt(1999,12,31),
-                                max_date_allowed=dt(2017,12,31),
-                                calendar_orientation='vertical',
-                                placeholder='Select a date',
-                                date='1999-12-31'
-                            ),
-                        ], style={'marginBottom':'2em'}
-                    ), # End of Dropdown Col
-                    dbc.Col(
-                        [
-                           html.H2("2-Hour Maps"),
-                           html.P("""Choose a time from the dropdown menu"""),
-                           dcc.Dropdown(
-                               id="dropdown",
-                               #options=[{"label":i, "value": i} for i in tec_df["time_stamp"].unique()],
-                               options = [{"label":i, "value": i} for i in tec_df["time_stamp"].unique()],
-                               value = initial_map
-                           )
-                       ], style={'marginBottom':'2em'}
-                    ) # End of Dropdown Col
-
-                ]), # End of Row
-            dbc.Row(
-                   [
-                   html.H2("Earthquakes are shown as a white spots on the map"),
-                   html.P("""
-                       Detection of signals near earthquake areas, using various
-                       sensing divices.
-                   """
-                   ),
-                   ],
-               ), # End of Heading Col           
-            #dbc.Row(children = [ # Children inherit sizing from the parents
-            #        dbc.Col(
-            #            [
-            #                html.H2("Graph"),
-            #                dcc.Graph(id="map")
-            #            ]
-            #        )
-            #        ]
-            #    )
-            dbc.Row(children=[
-                dbc.Col(html.Div(dcc.Graph(id="map",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12)
-            ], align="center" ),  # Align the row center
-            dbc.Row(
-                  [
-                  html.H2("Tec Animation"),
-                  html.P("""
-                        Animation of the TEC in a day.
-                  """
-                  ),
-                  ],
-              ), # End of Heading Col           
-           dbc.Row(children=[
-                dbc.Col(html.Div(dcc.Graph(id="animation",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12)
-            ], align="center" )  # Align the row center
-
-        ], 
-        fluid=True
-        #className="mt-4",
-)  # End of dbc.Container
-
-
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.layout = html.Div([navbar, body])
 
 ######################### GIM TEC MAP ############################
 
@@ -201,47 +96,16 @@ def update_eq_coords(date):
 ############### Update Graph ##########
 
 # Update the date for the 2-hour dropdown #
-@app.callback(
-    Output("dropdown", "options"),
-    [Input("date-picker", "date")]
-    )
-def update_value(date):
-    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, path
-
-    earthquakes_date = date
-    earthquakes_coords = update_eq_coords(date)
-
-    start_date = dt.strptime((''.join([date[:4], "-1-1"])), '%Y-%m-%d')
-    new_date = dt.strptime(date, '%Y-%m-%d')
-    delta =  new_date - start_date
-    day = format_days(str(delta.days + 1))
-    tec_file = path /''.join(["tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
-    tec_df = pd.read_csv(tec_file, names=tec_columns)
-    initial_map = tec_df["time_stamp"].unique()[0]   # Return 0the first map of that day
-    return [{"label":i, "value": i} for i in tec_df["time_stamp"].unique()]
-
-# Recreates the graph according to the chosen date in the 2-hour dropdown
-@app.callback(
-    Output("map", "figure"),
-    [Input("dropdown", "value")]
-    )
-def update_figure(dropdown_value):
-    global tec_df
-    global earthquakes_coords
-
-    map_df = tec_df[tec_df["time_stamp"]==dropdown_value]
-    lat = map_df["latitude"].values
-    lon = map_df["longitude"].values
-    tec_values = map_df["tec_value"].values
-    
-    earthquakes_coords = update_eq_coords(earthquakes_date)
-
-############### Basemap plot works ################
+def make_contour(hour):
+    map_df = tec_df[tec_df['time_stamp'] == hour]
+    tec_values = map_df['tec_value'].values
+    longitude = map_df['longitude'].values
+    latitude = map_df['latitude'].values
 
     trace1 = go.Contour(
         z = tec_values,
-        x = lon,
-        y = lat,
+        x = longitude,
+        y = latitude,
         colorscale="Jet",
         zauto=True,
         contours=dict(
@@ -254,172 +118,87 @@ def update_figure(dropdown_value):
         ),
         colorbar=colorbar_dict
     )
-    
+        
     data = ([trace1] + traces_cc)
-    
+    return data
 
-    layout = go.Layout(
-        autosize=True,
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor='rgba(0,0,0,0)',
-        #width=1080,
-        height=720,
-    )
-
-    fig = go.Figure(data=data, layout=layout)
-
-    #### Plot earthquakes for that day
-    fig.add_trace(
-        go.Scatter(
-            x=earthquakes_coords['longitude'],
-            y=earthquakes_coords['latitude'],
-            mode='markers',
-            marker=dict(
-                color='White',
-                opacity=0.8,
-                size=12,
-                line=dict(color='Magenta',
-                width=2),
-            ),
-            showlegend=False,
-            hovertext=earthquakes_coords['time_stamp']
-
-        )
-    )
-
-    fig.update_layout(
-        title=go.layout.Title(
-            text="Total Electron Content",
-            xref="paper",
-            yref="paper",
-            font=font_dict
-        ),
-        xaxis=go.layout.XAxis(
-            title=go.layout.xaxis.Title(
-                text="Longitud",
-                font=font_dict
-            )
-        ),
-        yaxis=go.layout.YAxis(
-            title=go.layout.yaxis.Title(
-                text="Latitude",
-                font=font_dict
-            )
-        )
-    )
-    
-    return fig
-
-##### Animate the TEC values for the day
-
-def animate_tec():
-    global tec_file
-    hours = tec_df["time_stamp"].unique()
-    start_map_data = hours[0]
-
-    fig_dict = {
-        "data": [],
-        "layout": {},
-        "frames": []
-    }
-
-    fig_dict["layout"]["xaxis"] = {"range": [-180, 180], "title": "Longitude"}
-    fig_dict["layout"]["yaxis"] = {"range": [-90, 90], "title": "Longitude"}
-    fig_dict["layout"]["hovermode"] = "closest"
-    fig_dict["layout"]["sliders"] = {
-        "args": [
-            "transition", {
-                "duration": 400, 
-                "easing": "cubic-in-out"
-            }
-        ],
-        "initialValue": "1952",
-        "plotlycommand": "animate",
-        "values": earthquakes,
-        "visible": True
-    }
-    fig_dict["layout"]["updatemenus"] = [
-        {
-            "buttons": [
-                {
-                "args": [None, {"frame": {"duration": 500, "redraw": True},
-                "fromcurrent": True,
-                "transition": {"duration": 300, "easing": "quadratic-in-out"}
-                }],
+def make_layout():
+    return go.Layout(
+    autosize=True,
+    paper_bgcolor="rgba(0,0,0,0)",
+    plot_bgcolor='rgba(0,0,0,0)',
+    #width=1080,
+    height=720,
+    updatemenus=[
+    {
+        "buttons": [
+            {
+                "args": [[None], {"frame": {"duration": 500, "redraw": True},
+                                "fromcurrent": True, "transition": {"duration": 500}}],
                 "label": "Play",
                 "method": "animate"
-        },
-                {
-                "args": [None, {"frame": {"duration": 500, "redraw": True},
-                "fromcurrent": True,
-                "transition": {"duration": 0, "easing": "quadratic-in-out"}
-                }],
+            },
+            {
+                "args": [[None], {"frame": {"duration": 0, "redraw": True},
+                                  "mode": "immediate",
+                                  "transition": {"duration": 0}}],
                 "label": "Pause",
                 "method": "animate"
-        },
-
-            ],
-            "direction": "right",
-            "pad": {"r": 10, "t":87},
-            "showactive": False,
-            "type": "buttons",
-            "x": 0.1,
-            "xachor": "right",
-            "y": 0,
-            "yanchor": "top"
-        }
-    ]
-    
-    sliders_dict = {
-        "active": 0,
-        "yanchor": "top",
-        "xanchor": "left",
-        "currentvalue": {
-            "font": {"size": 20},
-            "prefix": "Year:",
-            "visible": True,
-            "xanchor": "right"
-        },
-        "transition": {"duration": 300, "easing": "cubic-in-out"},
-        "pad": {"b": 10, "t":50},
-        "len": 0.9,
-        "x": 0.1,
-        "y": 0,
-        "steps": []
-    }
-
-    for hour in hours:
-        frame ={"data": [], "name": hour}
-        dataset_by_hour = tec_df[tec_df['time_stamp'] == hour]
-        data_dict = {
-            "x": dataset_by_hour['longitude'].values,
-            "y": dataset_by_hour['latitude'].values
-            }
-        
-    
-        frame["data"].append(data_dict)
-    
-        fig_dict["frames"].append(frame)
-        
-        slider_step = {"args":[
-            [hour], {"frame": {"duration": 300, "redraw":False},
-            "mode": "immediate",
-            "transition": {"duation":300}
             }
         ],
-        
-        "label":hour,
-        "method": "animate"
-        }
+        "direction": "left",
+        "pad": {"r": 10, "t": 87},
+        "showactive": False,
+        "type": "buttons",
+        "x": 0.1,
+        "xanchor": "right",
+        "y": 0,
+        "yanchor": "top"
+    }
+]
+    )
+
+def make_frames():
+    frames = []
+    for hour in hours:
+        frames.append(go.Frame(
+             data=make_contour(hour)
+         ))
+    return frames
     
-    sliders_dict["step"].append(slider_step)
+def make_graphs():
+    x = 0
+    for hour in hours:
+        
+       fig = go.Figure(
+           data=make_contour(hour),
+           layout=make_layout(),
+           frames=make_frames()
+       )
 
-    fig_dict["layout"]["sliders"] = [sliders_dict]
-
-    fig = go.Figure(fig_dict)
-
-    fig.show()
-
+       fig.update_layout(
+           title=go.layout.Title(
+               text="Total Electron Content",
+               xref="paper",
+               yref="paper",
+               font=font_dict
+           ),
+           xaxis=go.layout.XAxis(
+               title=go.layout.xaxis.Title(
+                   text="Longitude",
+                   font=font_dict
+               )
+           ),
+           yaxis=go.layout.YAxis(
+               title=go.layout.yaxis.Title(
+                   text="Latitude",
+                   font=font_dict
+               )
+           )
+       )
+       fig.write_image(''.join(['/home/antonio/Repos/iono2/animations/', str(x), '.png']))
+       x+=1
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    make_graphs()
+        
