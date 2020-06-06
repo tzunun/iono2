@@ -43,6 +43,7 @@ Create the environment using the file iono.yml
 conda env create -f iono.yml
 
 **Downloading the data**
+##In order to work properly the script must be run within the shell_scripts folder ##
 mkdir ionex_esag
 sh shell_scripts/download_files.sh
 
