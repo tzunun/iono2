@@ -45,7 +45,7 @@ letters such as 532jkljkl.
 
 The historical earthquake data comes from United States Geolocical Survey.
 
-The weather weather data is obtained from DarkSky using an interface in order to be able
+The weather weather data is obtained from DarkSky using an API in order to be able
 to request historical data associated with ambient temperatures at around dawn and dusk
 for the area near the earthquake.
 
@@ -121,7 +121,8 @@ will slow down the calculations and will use up RAM memory with data that is not
 
 A Jupyter Notebook was used to transform the data, another to obtain the weather data.
 
-Because of the 20 year scope of the dataset of this project, an issue that arouse was how to deal with data that is abnornal because
+Because of the 20 year scope of the dataset of this project, an issue that
+showed up, was how to deal with data that is abnornal because
 of space weather, especifically speaking of coronal mass ejections or solar flares as this affects directly the Ionosphere.  
 (This is something that the authors of the research paper did not have to face)
 
