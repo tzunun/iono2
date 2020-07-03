@@ -21,8 +21,10 @@ Miniconda 3.7
 	This code has been tested on Ubuntu 18.04LTS other Linux distributions might work.
 	aria2 is used instead of wget to speed up downloading the data.  wget only downloads a file at a time.
 
-	if using ubuntu
-	sudo apt install aria2
+if using ubuntu
+```console
+sudo apt install aria2
+```
 
 **Python 3.6 is required for the iono environment**
 YML file is provided (iono.yml) you will have to use conda or miniconda.
@@ -40,40 +42,68 @@ Fixed
 				matplotlib-base=3.1.3
 
 Create the environment using the file iono.yml
+```console
 conda env create -f iono.yml
+````
 
 **Downloading the data**
 Run the following command
+```console
 bash shell_scripts/download_files.sh
+```
 
 **Finding files with missing data (or without data)**
 In the ionex_esag directory run the following
 
-This will create a file name empty_files_list.txt in the ionex_esag_missing_files
-find -type f -empty >> ionex_esag_missing_files/empty_files_list.txt
+This will create/overwrite a file name empty_files_list.txt in the ionex_esag_missing_files
+```console
+find -type f -empty > ionex_esag_missing_files/empty_files_list.txt
+```
 
-This will list the files that are empty
+compare the empty_files_list.txt with the list.txt, if there is a file that is not on the list.txt then you must add it, because the script download_missing_files.sh uses it to download the missing files.
+
+for example if the missing file is: esag2490.18i.Z
+the format is the following .../ionex/year/day/agency{day}0.{year}i.Z
+
+The complete file location would be:
+ftp://cddis.nasa.gov/gnss/products/ionex/2018/249/jplg2490.18i.Z  
+
+This will remove the empty files 
+```console
 find -type f -empty -exec rm -f {} \;
-
-**Backup Files**
-mkdir ionex_esag_bk
-cp ionex_esag/* ionex_esag_bk
-
-**Extracting the Data**
-Files are compressed; with a .Z ending
-run the following command from directory containing the downloaded esag files.
-
-uncompress esag*
+```
 
 **Replace the empty files**
 JPL along with other organizations provide similar data in the same format.
 The data from esag is more uniform and complete.  I replaced the empty esag
 files with their counterparts from jpl. (Do not attempt to used JPL to
-download all the files, because the dataset has missing/corrupt data.
+download all the files, because the dataset has missing/corrupt data.)
 
-cp ionex_esag_emptyfiles/esag*.12i ionex_esag/
+Download the missing files.
+from the ionex_esag_missing_files directory run the following
+```console
+bash download_files.sh ./
+```
+
+from the iono2 folder run 
+```console
+cp ionex_esag_missing_files/esag*.Z ionex_esag/
+```
+
+**Backup Files**
+```console
+mkdir ionex_esag_bk
+cp ionex_esag/* ionex_esag_bk
+```
 
 
+**Extracting the Data**
+Files are compressed; with a .Z ending
+run the following command from directory ionex_esag.
+
+```console
+uncompress esag*
+```
 **Transforming the Data**
 Since this a project uses both Julia and Python3, Julia is used for the
 computational intensive tasks and Python3 mostly for the DASH/Flask

@@ -1,0 +1,9 @@
+ionex_esag/esag2710.12i.Z
+ionex_esag/esag2490.18i.Z
+ionex_esag/esag2720.12i.Z
+ionex_esag/esag2730.12i.Z
+ionex_esag/esag2700.12i.Z
+ionex_esag/esag2690.12i.Z
+ionex_esag/esag2680.12i.Z
+ionex_esag/esag0310.12i.Z
+ionex_esag/esag2670.12i.Z
