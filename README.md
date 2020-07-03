@@ -86,6 +86,8 @@ from the ionex_esag_missing_files directory run the following
 ```console
 bash download_files.sh ./
 ```
+
+
 **Copy the missing files to the ionex_esag directory**
 
 from the iono2 folder run 
@@ -93,10 +95,22 @@ from the iono2 folder run
 cp ionex_esag_missing_files/esag*.Z ionex_esag/
 ```
 
+**Rename the downloade files in the ionex_esag_missing_files directoroy**
+
+By replacing the jplg with esag in the file name. For example:
+
+jplg0310.12i.Z will become esag0310.12i.Z
+
+Or you could run the following command form within the ionex_esag directory
+```console
+for file in *.Z; do mv "$file" "${file/jpl/esa}"; done
+```
+
 **Backup Files**
 from the iono2 directory run the following
 ```console
 mkdir ionex_esag_bk
+
 cp ionex_esag/* ionex_esag_bk
 ```
 

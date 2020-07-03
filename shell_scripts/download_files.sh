@@ -24,5 +24,6 @@ aria2c --dir=$DOWNLOAD_LOCATION --input-file=$URL_FILE --max-concurrent-download
 END_TIME=`date +%s`
 ELAPSED_TIME=$((END_TIME-START_TIME))
 
-TOTAL_DOWNLOADED_FILES=$((ls -l $DOWNLOAD_LOCATION | wc -l))
-echo "$TOTAL_DOWNLOADED_FILES were downloaded in $ELAPSED_TIME seconds"
+#TOTAL_DOWNLOADED_FILES=$((ls -l $DOWNLOAD_LOCATION | wc -l))
+#echo "$TOTAL_DOWNLOADED_FILES were downloaded in $ELAPSED_TIME seconds"
+echo "Files were downloaded in $ELAPSED_TIME seconds"
