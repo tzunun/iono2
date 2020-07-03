@@ -65,7 +65,7 @@ compare the empty_files_list.txt with the list.txt, if there is a file that is n
 for example if the missing file is: esag2490.18i.Z
 the format is the following .../ionex/year/day/agency{day}0.{year}i.Z
 
-The complete file location would be:
+The complete file name on the list.txt file would be:
 ftp://cddis.nasa.gov/gnss/products/ionex/2018/249/jplg2490.18i.Z  
 
 This will remove the empty files 
@@ -74,16 +74,19 @@ find -type f -empty -exec rm -f {} \;
 ```
 
 **Replace the empty files**
+
 JPL along with other organizations provide similar data in the same format.
 The data from esag is more uniform and complete.  I replaced the empty esag
 files with their counterparts from jpl. (Do not attempt to used JPL to
 download all the files, because the dataset has missing/corrupt data.)
 
-Download the missing files.
+**Download the missing files only if necessary** since the missing files are included in the repo.
+
 from the ionex_esag_missing_files directory run the following
 ```console
 bash download_files.sh ./
 ```
+**Copy the missing files to the ionex_esag directory**
 
 from the iono2 folder run 
 ```console
@@ -91,6 +94,7 @@ cp ionex_esag_missing_files/esag*.Z ionex_esag/
 ```
 
 **Backup Files**
+from the iono2 directory run the following
 ```console
 mkdir ionex_esag_bk
 cp ionex_esag/* ionex_esag_bk
