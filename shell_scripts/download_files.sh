@@ -2,10 +2,12 @@
 
 #time aria2c -d ionex_files/ -i ionex_files_urls.txt -j 120 --c true
 
-#Create directory to store the downloaded files
 DIR=$(dirname $(dirname $(readlink -f "$0")))
 ESAG_DOWNLOAD_DIR="${DIR}/ionex_esag" 
+URL_FILE="${DIR}/ionex_urls_esag.txt"
+DOWNLOAD_LOCATION="${ESAG_DOWNLOAD_DIR}"
 
+#Create directory to store the downloaded files if it does not exist.
 if [  -d "$ESAG_DOWNLOAD_DIR" ]; then
 				echo "$ESAG_DOWNLOAD_DIR exists. Starting download.."
 else
@@ -14,8 +16,6 @@ else
 fi
 
 START_TIME=`date +%s`
-URL_FILE="${DIR}/ionex_urls_esag.txt"
-DOWNLOAD_LOCATION="${ESAG_DOWNLOAD_DIR}"
 
 # Download and save the files listed in the ionex_urls_esag.txt which is in
 # the parent directory to a new directory named ionex_esag.
@@ -25,4 +25,4 @@ END_TIME=`date +%s`
 ELAPSED_TIME=$((END_TIME-START_TIME))
 
 TOTAL_DOWNLOADED_FILES=$((ls -l $DOWNLOAD_LOCATION | wc -l))
-echo "$TOTAL_DOWNLOADED_FILES were downloaded in $ELAPSED_TIME"
+echo "$TOTAL_DOWNLOADED_FILES were downloaded in $ELAPSED_TIME seconds"

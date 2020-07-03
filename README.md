@@ -43,12 +43,16 @@ Create the environment using the file iono.yml
 conda env create -f iono.yml
 
 **Downloading the data**
-##In order to work properly the script must be run within the shell_scripts folder ##
-mkdir ionex_esag
-sh shell_scripts/download_files.sh
+Run the following command
+bash shell_scripts/download_files.sh
 
 **Finding files with missing data (or without data)**
 In the ionex_esag directory run the following
+
+This will create a file name empty_files_list.txt in the ionex_esag_missing_files
+find -type f -empty >> ionex_esag_missing_files/empty_files_list.txt
+
+This will list the files that are empty
 find -type f -empty -exec rm -f {} \;
 
 **Backup Files**
