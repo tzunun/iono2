@@ -1,4 +1,12 @@
+## Note
+Anonymous ftp access will be discountinued at CDDIS on October 31st 2020, there will be other ways to obtain the data but the script I wrote to get the ionospheric data wil no longer work.
+
+Dark Sky was acquired by Apple and it is no longer accepting new singups.
+
 **Earthquake Project**
+
+Information about the scripts.
+
 Closest City
 				find the closest city to the epicenter of an earthquake.
 
@@ -7,6 +15,9 @@ Historical Weather Data
 				date given.
 
 **Install**
+Julia
+Once you have Julia installed, you need to install IJulia
+
 Anaconda 3.7
 or
 Miniconda 3.7
@@ -19,7 +30,7 @@ Miniconda 3.7
 
 **Important!**
 	This code has been tested on Ubuntu 18.04LTS other Linux distributions might work.
-	aria2 is used instead of wget to speed up downloading the data.  wget only downloads a file at a time.
+	aria2 is used instead of wget to speed up downloading the ionospheric data.  previously I was using wget and was only downloading a file at a time.
 
 if using ubuntu
 ```console
@@ -131,3 +142,32 @@ functionallity (Dash/Flask)
 run the julia.ipynb notebook using jupyter lab or notebook.
 The notebook will basically create the CSV and Table files needed to create
 the database.  The table files are needed by JuliaDB
+
+**Create Directories to store data**
+
+```console
+mkdir tec_csv_esag tec_tables_esag
+```
+
+**OLR Dataset**
+
+https://www.ncei.noaa.gov/
+
+https://www.ncei.noaa.gov/data/outgoing-longwave-radiation-daily/access/
+
+
+**TEC Dataset**
+
+Explanation of the term:
+https://www.swpc.noaa.gov/phenomena/total-electron-content
+
+NASA Crustal Dynamics Data Information System
+https://cddis.nasa.gov/
+
+https://cddis.nasa.gov/Data_and_Derived_Products/GNSS/atmospheric_products.html#iono
+
+**Weather Data**
+https://darksky.net
+
+https://darksky.net/dev
+
