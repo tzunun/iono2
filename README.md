@@ -3,6 +3,8 @@ Anonymous ftp access will be discountinued at CDDIS on October 31st 2020, there 
 
 Dark Sky was acquired by Apple and it is no longer accepting new singups.
 
+Historical data will try to find other sources.
+https://www.ncdc.noaa.gov/isd
 **Earthquake Project**
 
 Information about the scripts.
@@ -171,3 +173,4 @@ https://darksky.net
 
 https://darksky.net/dev
 
+https://www.ncdc.noaa.gov/isd

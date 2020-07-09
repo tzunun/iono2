@@ -1,7 +1,5 @@
 #!/usr/bin/bash
 
-#time aria2c -d ionex_files/ -i ionex_files_urls.txt -j 120 --c true
-
 DIR=$(dirname $(dirname $(readlink -f "$0")))
 ESAG_DOWNLOAD_DIR="${DIR}/ionex_esag" 
 URL_FILE="${DIR}/ionex_urls_esag.txt"
@@ -24,6 +22,4 @@ aria2c --dir=$DOWNLOAD_LOCATION --input-file=$URL_FILE --max-concurrent-download
 END_TIME=`date +%s`
 ELAPSED_TIME=$((END_TIME-START_TIME))
 
-#TOTAL_DOWNLOADED_FILES=$((ls -l $DOWNLOAD_LOCATION | wc -l))
-#echo "$TOTAL_DOWNLOADED_FILES were downloaded in $ELAPSED_TIME seconds"
 echo "Files were downloaded in $ELAPSED_TIME seconds"

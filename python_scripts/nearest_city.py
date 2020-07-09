@@ -11,7 +11,7 @@ def nearest_city(cities_data, epicenter):
 
 def get_cities_data():
     cities = []
-    file_name = 'csv_files/world_cities_data.csv'
+    file_name = '/home/antonio/Repos/iono2/cities_csv/world_cities_data.csv'
     
     with open(file_name, 'r') as f:
         reader = csv.reader(f)
