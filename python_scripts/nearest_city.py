@@ -27,5 +27,5 @@ def epicenter_nearest_city(epicenter):
     return nearest_city(cities_data, epicenter)
 
 # Testing the script
-epicenter = {'latitude':5.8993 , 'longitude': 129.9209 }
+epicenter = {'latitude':-16.925 , 'longitude': -174.248 }
 print(epicenter_nearest_city(epicenter))
