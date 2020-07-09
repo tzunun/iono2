@@ -5,7 +5,17 @@ Dark Sky was acquired by Apple and it is no longer accepting new singups.
 
 Historical data will try to find other sources.
 https://www.ncdc.noaa.gov/isd
-**Earthquake Project**
+
+
+
+**Earthquake Precursors Project**
+
+
+Based on the publication
+
+https://arxiv.org/abs/1508.01805
+
+**I am using the publication as a guide in my attempt to reproduce the procedures outlined there.  This is mostly to learn more about data science and to learn the Julia programing language.**
 
 Information about the scripts.
 
