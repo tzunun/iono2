@@ -3,13 +3,15 @@ Anonymous ftp access will be discountinued at CDDIS on October 31st 2020, there 
 
 Dark Sky was acquired by Apple and it is no longer accepting new singups.
 
-Historical data will try to find other sources.
+For historical weather data other possible option is:
+
 https://www.ncdc.noaa.gov/isd
 
+The Python code will remain but the aim of this project is to use Julia for the whole project (except downloading the data).  All the code could be improved but the earthquakes_dash_app.py 
+can use higher resolution when drawing the earth map(this process could be saved to disc and loaded when the app starts)
 
 
 **Earthquake Precursors Project**
-
 
 Based on the publication
 
@@ -27,17 +29,45 @@ Historical Weather Data
 				date given.
 
 **Install**
-Julia
-Once you have Julia installed, you need to install IJulia
+Julia from https://julialang.org/downloads/
 
+I am installing Jualia in the /opt directory, and then I am creating a symbolic link in the /usr/local/bin directory.  After that you can just type julia at the command prompt in order to start the Julia REPL
+
+--Installation:
+
+Download the 64bit version from https://julialang.org/downloads/.
+
+if using Ubuntu, at the terminal
+```console
+wget -c https://julialang-s3.julialang.org/bin/linux/x64/1.4/julia-1.4.2-linux-x86_64.tar.gz
+sudo tar xf ./julia-1.4.2-linux-x86_64.tar.gz -C /opt
+sudo ln -s /opt/julia-1.4.2/bin/julia /usr/local/bin/julia
+
+```
+
+Once you have Julia installed,
+just type julia in the terminal and hit enter.  This will start the Julia REPL with a prompt like this:
+
+```consolse
+julia>
+```
+--In order to install packages in Julia you use the builtin package manager Pkg.
+
+you need to install IJulia which is the Julia Kernel for Jupyter.
+
+```console
+julia> using Pkg
+julia> Pkg.add("IJulia")
+
+```
+
+## Note, other packages will need to be installed to work with the Julia notebooks.  I will provide the instructions to create the Julia env, soon.
+
+
+**Install**
 Anaconda 3.7
 or
 Miniconda 3.7
-
-**Terminology**
-
-	Terminator: The line that separates day and night, it is also referred to as the "grey line" and the "twilight zone".  For more information see
-    https://sos.noaa.gov/datasets/daynight-terminator-daily/
 
 
 **Important!**
@@ -50,9 +80,16 @@ sudo apt install aria2
 ```
 
 **Python 3.6 is required for the iono environment**
+
+This environment is only for the Python Dash App.
+
 YML file is provided (iono.yml) you will have to use conda or miniconda.
 The conda-forge channel will be the source of the libraries on this
-environment. **problems:** if you encounter a problem when creating the
+environment.
+
+ **problems:** 
+ 
+if you encounter a problem when creating the
 environment, open the iono.yml and modify the file as follows:
 asssuming that the line specifying matplotlib is the issue. Delete the part of
 the line from the second `=` sign (including the second `=` sign) until the
@@ -70,6 +107,7 @@ conda env create -f iono.yml
 ````
 
 **Downloading the data**
+
 Run the following command
 ```console
 bash shell_scripts/download_files.sh
@@ -98,8 +136,8 @@ find -type f -empty -exec rm -f {} \;
 
 **Replace the empty files**
 
-JPL along with other organizations provide similar data in the same format.
-The data from esag is more uniform and complete.  I replaced the empty esag
+JPL along with other similar agencies provide data in the same format.
+The data from European Space Agency is more uniform and complete.  I replaced the empty esag
 files with their counterparts from jpl. (Do not attempt to used JPL to
 download all the files, because the dataset has missing/corrupt data.)
 
@@ -109,7 +147,6 @@ from the ionex_esag_missing_files directory run the following
 ```console
 bash download_files.sh ./
 ```
-
 
 **Copy the missing files to the ionex_esag directory**
 
@@ -136,7 +173,6 @@ mkdir ionex_esag_bk
 
 cp ionex_esag/* ionex_esag_bk
 ```
-
 
 **Extracting the Data**
 Files are compressed; with a .Z ending
@@ -179,8 +215,15 @@ https://cddis.nasa.gov/
 https://cddis.nasa.gov/Data_and_Derived_Products/GNSS/atmospheric_products.html#iono
 
 **Weather Data**
+
 https://darksky.net
 
 https://darksky.net/dev
 
 https://www.ncdc.noaa.gov/isd
+
+
+**Terminology**
+
+	Terminator: The line that separates day and night, it is also referred to as the "grey line" and the "twilight zone".  For more information see
+    https://sos.noaa.gov/datasets/daynight-terminator-daily/
