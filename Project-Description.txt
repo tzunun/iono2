@@ -1,4 +1,4 @@
-Ionospheric Anomalies as Percursor Signals for Earthquakes.
+Ionospheric Anomalies as Precursor Signals for Earthquakes.
 
 
 TL/DR:
@@ -78,11 +78,18 @@ I found that the correct name should be closer to sismic activity.  Along with E
 and rock burst(I am unclear about the meaning of this).
 
 The OLR or Earth radiation data is one large file.  The only obstacle was the unfamiliarity with the NetCDF format.
+I was able to find more granular data, I wish the TEC data was available at such definition.
+I still have extract the data and organize it in a way that is useful for my intended purposes.
 
 The weather data (Temperature) provided by DarkSky is basically learning how the data
 request and response are structured.  After obtaining a key to allow a program to make
 continuous requests for weather data. The challenging part was to write the program because
 the goal is to request historical and current (at the time of the earthquake) temperature data.
+
+after the initial trial to obtain the historical data, I noticed that historical data was not available because there was no match
+between the coords provided to the weather api and the weather data available.  I had to create additional features for the eq79 dataset
+which now includes nearest city(lat, lon and distance) in order to obtain the necessary data, and to have a way somehow compensate from 
+deviating from the research paper. 
 
 The Ionospheric data was the most challenging.  It was larger, some of the data was missing (complete days), some was incomplete (partial days) and the data
 sanitazion did not work when some of the data files were created because fields that were supposed to have numbers
@@ -143,3 +150,9 @@ Plan:
     Basically the user will pick an earthquake and the application will show what the 
     values according to the research papers where and possible offer a similar solution by 
     using my own observations and compare differences.
+
+    Analyze a large number of Earthquakes and look for correlations.  one issue is that the magnitude scale is logarithmic 
+    and will have to pay attention to how the tec, olr, weather anomalies manifest in lower mangnitude Earthquakes.
+    I have an idea to extrapolate the smallest deviations for such lower magnitudes.  the Issue is the data.  As it stands 
+    I would have to get data for over 115000 Earthquakes if I decided to Analyze all.  as it stands it will be 
+    7-9 magnitude.
