@@ -65,6 +65,7 @@ julia> Pkg.add("IJulia")
 
 
 **Install**
+
 Anaconda 3.7
 or
 Miniconda 3.7

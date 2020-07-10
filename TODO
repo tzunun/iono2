@@ -16,24 +16,15 @@ Pytorch for deeplearning to train models
 * Save map data so it can be loaded and read from the flask app.
 				Map can easily be modified by data
 
-Terminator time must be calculated locally, 
-	Find out what time is being used to write the reports,
-	is it UTC?  Most likely since it expands to other Global Posicioning satellite systems
-
-	Possibly calculate it based on Lat, Long and add the time to the database.
-	if calculations proves time consuming then use the weather data api to get 
-	the information.
 
 sunrise and sunset provided by weather api, data has to be saved as to not make requests of the same data
 
-  87.5-180.0 180.0   5.0 450.0                            LAT/LON1/LON2/DLON/H
-  30,30,30,30,30,30,29,29,29,29,28,28,28,27,27,27,27,26,26,26,26,25,25,25,25,25,25,25,25,25,25,25,26,26,26,26,27,27,27,27,28,28,28,29,29,29,29,30,30,30,30,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,31,30
 
 ################ Dash ##########################
 
-When in fullscreen mode the TEC map is not proportional
+*When in fullscreen mode the TEC map is not proportional
 
-The selector should be either Date and choose either Earquake TEC map obviously the 
+*The selector should be either Date and choose either Earquake TEC map obviously the 
 earthquake lat, lon have to be plotted on the same map.
 Or choose TEC map with different hours.  The issue is calculating what hour to display for the
 TEC map that show earthquake.
