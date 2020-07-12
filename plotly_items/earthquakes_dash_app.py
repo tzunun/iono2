@@ -19,10 +19,10 @@ earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitud
 earthquakes_file = path / "earthquakes_csv/1999_2017_eq.csv"
 earthquakes_df = pd.read_csv(earthquakes_file, names=earthquakes_columns)
 earthquakes_coords = []
-earthquakes_date = '1999-12-31'
+earthquakes_date = '2015-05-03'
 
 tec_columns = ["time_stamp", "latitude", "longitude", "tec_value"]
-tec_file = path / "tec_csv_esag/esag3650.99i.csv"
+tec_file = path / "tec_csv_esag/esag1230.15i.csv"
 tec_df = pd.read_csv(tec_file, names=tec_columns)
 initial_map = tec_df["time_stamp"].unique()[0]   # Return the first map of that day
 hours = tec_df["time_stamp"].unique()
@@ -65,7 +65,7 @@ body = dbc.Container(
                                 max_date_allowed=dt(2017,12,31),
                                 calendar_orientation='vertical',
                                 placeholder='Select a date',
-                                date='1999-12-31'
+                                date='2015-05-03'
                             ),
                         ], style={'marginBottom':'2em'}
                     ), # End of Dropdown Col
@@ -116,8 +116,8 @@ app.layout = html.Div([navbar, body])
 
 ######################### GIM TEC MAP ############################
 
-#m = Basemap(projection="merc", area_thresh=0.1, resolution="i")
-m = Basemap()
+m = Basemap(projection="merc", area_thresh=0.1, resolution="i")
+#m = Basemap()
 #m = Basemap(projection="mall", celestial=True, llcrnrlat=-87.5, urcrnrlat=87.5, llcrnrlon=-180, urcrnrlon=180, resolution="i")
 
 def make_scatter(x,y):
