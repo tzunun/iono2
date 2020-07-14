@@ -13,7 +13,7 @@ can use higher resolution when drawing the earth map(this process could be saved
 
 **Earthquake Precursors Project**
 
-Based on the publication
+Based on the paper
 
 https://arxiv.org/abs/1508.01805
 
