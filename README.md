@@ -119,7 +119,7 @@ In the ionex_esag directory run the following
 
 This will create/overwrite a file name empty_files_list.txt in the ionex_esag_missing_files
 ```console
-find -type f -empty > ionex_esag_missing_files/empty_files_list.txt
+find -type f -empty > ../ionex_esag_missing_files/empty_files_list.txt
 ```
 
 compare the empty_files_list.txt with the list.txt, if there is a file that is not on the list.txt then you must add it, because the script download_missing_files.sh uses it to download the missing files.
@@ -153,7 +153,7 @@ bash download_files.sh ./
 
 from the iono2 folder run 
 ```console
-cp ionex_esag_missing_files/esag*.Z ionex_esag/
+cp ionex_esag_missing_files/jplg*.Z ionex_esag/
 ```
 
 **Rename the downloade files in the ionex_esag_missing_files directoroy**
@@ -164,7 +164,7 @@ jplg0310.12i.Z will become esag0310.12i.Z
 
 Or you could run the following command form within the ionex_esag directory
 ```console
-for file in *.Z; do mv "$file" "${file/jpl/esa}"; done
+for file in jplg*.Z; do mv "$file" "${file/jpl/esa}"; done
 ```
 
 **Backup Files**
