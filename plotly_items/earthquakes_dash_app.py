@@ -16,7 +16,7 @@ from dash.dependencies import Input, Output
 path = pathlib.Path('~/Repos/iono2')
 
 earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitude"]
-earthquakes_file = path / "earthquakes_csv/1999_2017_eq.csv"
+earthquakes_file = path / "earthquakes_csv/1999_2017_earthquakes.csv"
 earthquakes_df = pd.read_csv(earthquakes_file, names=earthquakes_columns)
 earthquakes_coords = []
 earthquakes_date = '2015-05-03'

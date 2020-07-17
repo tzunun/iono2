@@ -1,12 +1,14 @@
 name: iono
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=0_gnu
   - basemap=1.2.1=py36hd1be537_2
-  - ca-certificates=2019.11.28=hecc5488_0
-  - certifi=2019.11.28=py36_0
+  - basemap-data-hires=1.2.1=0
+  - ca-certificates=2020.6.20=hecda079_0
+  - certifi=2020.6.20=py36h9f0ad1d_0
   - click=7.0=py_0
   - cycler=0.10.0=py_2
   - dash=1.8.0=py_0
@@ -35,10 +37,10 @@ dependencies:
   - libpng=1.6.37=hed695b0_0
   - libstdcxx-ng=9.2.0=hdf63c60_2
   - markupsafe=1.1.1=py36h516909a_0
-  - matplotlib-base=3.1.3
+  - matplotlib-base=3.1.3=py36h250f245_0
   - ncurses=6.1=hf484d3e_1002
   - numpy=1.18.1=py36h95a1406_0
-  - openssl=1.1.1d=h516909a_0
+  - openssl=1.1.1g=h516909a_0
   - pandas=1.0.0=py36hb3f55d8_0
   - pip=20.0.2=py36_1
   - plotly=4.5.0=py_0
@@ -48,6 +50,7 @@ dependencies:
   - pyshp=2.1.0=py_0
   - python=3.6.7=h357f687_1006
   - python-dateutil=2.8.1=py_0
+  - python_abi=3.6=1_cp36m
   - pytz=2019.3=py_0
   - pyyaml=5.3=py36h516909a_0
   - readline=8.0=hf8c457e_0
