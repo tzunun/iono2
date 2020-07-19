@@ -80,18 +80,18 @@ if using ubuntu
 sudo apt install aria2
 ```
 
-**Python 3.6 is required for the iono environment**
+**Python 3.6 is required for the iono2 environment**
 
 This environment is only for the Python Dash App.
 
-YML file is provided (iono.yml) you will have to use conda or miniconda.
+YML file is provided (iono2.yml) you will have to use conda or miniconda.
 The conda-forge channel will be the source of the libraries on this
 environment.
 
  **problems:** 
  
 if you encounter a problem when creating the
-environment, open the iono.yml and modify the file as follows:
+environment, open the iono2.yml and modify the file as follows:
 asssuming that the line specifying matplotlib is the issue. Delete the part of
 the line from the second `=` sign (including the second `=` sign) until the
 end of the line.
@@ -102,9 +102,9 @@ Line causing the issue:
 Fixed
 				matplotlib-base=3.1.3
 
-Create the environment using the file iono.yml
+Create the environment using the file iono2.yml
 ```console
-conda env create -f iono.yml
+conda env create -f iono2.yml
 ````
 
 **Downloading the data**
