@@ -4,12 +4,27 @@ import pathlib
 import plotly.graph_objects as go
 from mpl_toolkits.basemap import Basemap
 
+#import dash
+#import dash_bootstrap_components as dbc
+#
+#
+#app = dash.Dash(
+#    external_stylesheets=[dbc.themes.CYBORG]
+#)
+#
+#app.layout = dbc.Alert(
+#    "hello from, Bootstrap", className="m-5"
+#)
+#
+#if __name__=="__main__":
+#    app.run_server()
+
 
 # Current working directory, pwd in bash.
 path = pathlib.Path('~/Repos/iono2')
 
 olr_columns = ["latitude", "longitude", "olr_value"]
-olr_file = path / "/home/antonio/Repos/iono2/olr_csv/test.csv"
+olr_file = path / "/home/antonio/Repos/iono2/olr_csv/1999_5.csv"
 olr_df = pd.read_csv(olr_file, names=olr_columns)
 olr_coords = []
 
