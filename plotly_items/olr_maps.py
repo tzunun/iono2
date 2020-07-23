@@ -1,6 +1,7 @@
+import pickle
+import pathlib
 import numpy as np
 import pandas as pd
-import pathlib
 import plotly.graph_objects as go
 from mpl_toolkits.basemap import Basemap
 
@@ -11,7 +12,12 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 # Current working directory, pwd in bash.
-path = pathlib.Path('~/Repos/iono2')
+path = pathlib.Path('/home/antonio/Repos/iono2')
+
+# Load traces_cc
+traces_cc_file = path / 'plotly_items/traces_cc.data'
+with open(traces_cc_file, 'rb') as filehandle:
+    traces_cc = pickle.load(filehandle)
 
 olr_columns = ["latitude", "longitude", "olr_value"]
 olr_file = path / "/home/antonio/Repos/iono2/olr_csv/1999_1.csv"
@@ -37,46 +43,46 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.layout = html.Div([navbar])
 
 
-######################### OLR MAP ############################
-
-#m = Basemap(projection="merc", area_thresh=0.1, resolution="i")
-m = Basemap()
-#m = Basemap(projection="mall", celestial=True, llcrnrlat=-87.5, urcrnrlat=87.5, llcrnrlon=-180, urcrnrlon=180, resolution="i")
-
-def make_scatter(x,y):
-    return go.Scattergl(
-        x=x,
-        y=y,
-        mode="lines",
-        line=go.scattergl.Line(color="black"),
-        name=" ",
-        showlegend=False
-    )
-
-def polygons_to_traces(poly_paths, N_poly):
-    traces = []
-    for i_poly in range(N_poly):
-        poly_path = poly_paths[i_poly]
-        coords_cc = np.array(
-            [(vertex[0],vertex[1])
-            for (vertex, code) in poly_path.iter_segments(simplify=False)]
-        )
-    
-        lon_cc, lat_cc = m(coords_cc[:,0], coords_cc[:,1], inverse=True)
-        traces.append(make_scatter(lon_cc, lat_cc))
-    return traces
-
-#Function generating coastline lon/lat traces
-def get_coastline_traces():
-    poly_paths = m.drawcoastlines().get_paths()
-    N_poly = 91  # use only the 91st biggest coastlines (i.e no rivers)
-    return polygons_to_traces(poly_paths, N_poly)
-
-# Function generating country lon/lat traces
-def get_country_traces():
-    poly_paths = m.drawcountries().get_paths()
-    N_poly = len(poly_paths)
-    return polygons_to_traces(poly_paths, N_poly)
+########################## OLR MAP ############################
+#
+##m = Basemap(projection="merc", area_thresh=0.1, resolution="i")
+#m = Basemap()
+##m = Basemap(projection="mall", celestial=True, llcrnrlat=-87.5, urcrnrlat=87.5, llcrnrlon=-180, urcrnrlon=180, resolution="i")
+#
+#def make_scatter(x,y):
+#    return go.Scattergl(
+#        x=x,
+#        y=y,
+#        mode="lines",
+#        line=go.scattergl.Line(color="black"),
+#        name=" ",
+#        showlegend=False
+#    )
+#
+#def polygons_to_traces(poly_paths, N_poly):
+#    traces = []
+#    for i_poly in range(N_poly):
+#        poly_path = poly_paths[i_poly]
+#        coords_cc = np.array(
+#            [(vertex[0],vertex[1])
+#            for (vertex, code) in poly_path.iter_segments(simplify=False)]
+#        )
+#    
+#        lon_cc, lat_cc = m(coords_cc[:,0], coords_cc[:,1], inverse=True)
+#        traces.append(make_scatter(lon_cc, lat_cc))
+#    return traces
+#
+##Function generating coastline lon/lat traces
+#def get_coastline_traces():
+#    poly_paths = m.drawcoastlines().get_paths()
+#    N_poly = 91  # use only the 91st biggest coastlines (i.e no rivers)
+#    return polygons_to_traces(poly_paths, N_poly)
+#
+## Function generating country lon/lat traces
+#def get_country_traces():
+#    poly_paths = m.drawcountries().get_paths()
+#    N_poly = len(poly_paths)
+#    return polygons_to_traces(poly_paths, N_poly)
 
 font_dict = dict(
     family="Courier New, monospace",
@@ -92,7 +98,7 @@ colorbar_dict = dict(
 )
 
 # Generate map traces once!
-traces_cc = get_coastline_traces()+get_country_traces()
+#traces_cc = get_coastline_traces()+get_country_traces()
 
 # Helper functions for dealing with dates and coordinates
 def format_days(day):
@@ -184,11 +190,12 @@ def make_graphs():
         )
     )
 
+    #return fig
     fig.show()
 
 if __name__ == "__main__":
-    #make_graphs()
-    app.run_server(debug=True)
+    make_graphs()
+    #app.run_server(debug=True)
 
 
         

@@ -1,10 +1,11 @@
+import os
+import pickle
+import pathlib
 import numpy as np
 import pandas as pd
 from datetime import datetime as dt
-import pathlib
 
 import plotly.graph_objs as go
-from mpl_toolkits.basemap import Basemap
 
 import dash
 import dash_core_components as dcc
@@ -14,6 +15,12 @@ from dash.dependencies import Input, Output
 
 # Current working directory, pwd in bash.
 path = pathlib.Path('~/Repos/iono2')
+
+# Load traces_cc
+traces_cc_file = path / 'plotly_items/traces_cc_data'
+with open(traces_cc_file, 'rb') as filehandle:
+    traces_cc = pickle.load(filehandle)
+
 
 earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitude"]
 earthquakes_file = path / "earthquakes_csv/1999_2017_earthquakes.csv"
