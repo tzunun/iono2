@@ -8,9 +8,9 @@ from datetime import datetime as dt
 import plotly.graph_objs as go
 
 import dash
+import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
-import dash_html_components as html
 from dash.dependencies import Input, Output
 
 # Current working directory, pwd in bash.
@@ -40,8 +40,6 @@ olr_columns = ["latitude", "longitude", "olr_value"]
 olr_file = "/home/antonio/Repos/iono2/olr_csv/1999_1.csv"
 olr_df = pd.read_csv(olr_file, names=olr_columns)
 olr_coords = []
-
-
 
 ########################## OLR MAP ############################
 
@@ -224,14 +222,46 @@ tec_layout = html.Div([
     html.Br(),
 ])
 
-@app.callback([
+
+def update_eq_coords(date):
+
+    # List of boolean values from comparing the first 10 characters of the date string in 'i' and comparing it to 'date'
+    day_indexes = ([i[:10] == date for i in earthquakes_df['time_stamp']])
+    return earthquakes_df[day_indexes]
+
+# Update the date for the 2-hour dropdown #
+@app.callback(
+    Output("dropdown", "options"),
+    [Input("date-picker", "date")]
+    )
+def update_value(date):
+    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, path
+
+    earthquakes_date = date
+    earthquakes_coords = update_eq_coords(date)
+
+    start_date = dt.strptime((''.join([date[:4], "-1-1"])), '%Y-%m-%d')
+    new_date = dt.strptime(date, '%Y-%m-%d')
+    delta =  new_date - start_date
+    day = format_days(str(delta.days + 1))
+    tec_file = path /''.join(["tec_csv_esag/esag", day, ".", (str(new_date.year)[2:]), "i.csv"])
+    tec_df = pd.read_csv(tec_file, names=tec_columns)
+    initial_map = tec_df["time_stamp"].unique()[0]   # Return 0the first map of that day
+    return [{"label":i, "value": i} for i in tec_df["time_stamp"].unique()]
+
+@app.callback(
     Output('tec-content', 'children')
-], [Input("dropdown", "value")])
-def page_1_dropdown(date):
-    print("hello There")
-    ##
+, [Input("dropdown", "value")])
+def update_tec_map(dropdown_value):
+    tec_map_df = tec_df[tec_df['time_stamp'] == dropdown_value]
 
+    graph_title = "Total Electron Content"
+    measuring_unit = 'TEC'
+    depth = tec_map_df['tec_value'].values
+    longitude = tec_map_df['longitude'].values
+    latitude = tec_map_df['latitude'].values
 
+    return html.Div(dcc.Graph(id='tec_map', figure=make_graphs(graph_title, measuring_unit, depth, latitude, longitude)))
 
 
 @app.callback(
@@ -243,7 +273,6 @@ def update_olr_map(value):
     depth = olr_df['olr_value'].values
     longitude = olr_df['longitude'].values
     latitude = olr_df['latitude'].values
-    
 
     return html.Div(dcc.Graph(id='olr_map', figure=make_graphs(graph_title, measuring_unit, depth, latitude, longitude)))
 
