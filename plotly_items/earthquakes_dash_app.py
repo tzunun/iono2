@@ -37,7 +37,7 @@ hours = tec_df["time_stamp"].unique()
 
 # OLR variables
 olr_columns = ["latitude", "longitude", "olr_value"]
-olr_file = "/home/antonio/Repos/iono2/olr_csv/1999_1.csv"
+olr_file = "/home/antonio/Repos/iono2/olr_csv/2015_123.csv"
 olr_df = pd.read_csv(olr_file, names=olr_columns)
 olr_coords = []
 
@@ -74,10 +74,6 @@ def update_eq_coords(date):
     day_indexes = ([i[:10] == date for i in olr_df['time_stamp']])
     return olr_df[day_indexes]
 
-
-############### Update Graph ##########
-
-# Update the date for the 2-hour dropdown #
 def make_contour(measuring_unit, depth, latitude, longitude):
 
     trace1 = go.Contour(
@@ -119,10 +115,30 @@ def make_frames(measuring_unit, depth, latitude, longitude):
 
     
 def make_graphs(graph_title, measuring_unit, depth, latitude, longitude):
+    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, path
     fig = go.Figure(
         data=make_contour(measuring_unit, depth, latitude, longitude),
         layout=make_layout(),
         frames=make_frames(measuring_unit, depth, latitude, longitude)
+    )
+
+    #### Plot earthquakes for that day
+    fig.add_trace(
+        go.Scatter(
+            x=earthquakes_coords['longitude'],
+            y=earthquakes_coords['latitude'],
+            mode='markers',
+            marker=dict(
+                color='White',
+                opacity=0.8,
+                size=12,
+                line=dict(color='Magenta',
+                width=2),
+            ),
+            showlegend=False,
+            hovertext=earthquakes_coords['time_stamp']
+
+        )
     )
 
     fig.update_layout(
@@ -147,8 +163,6 @@ def make_graphs(graph_title, measuring_unit, depth, latitude, longitude):
     )
 
     return fig
-    #fig.show()
-
 
 
 # Since we're adding callbacks to elements that don't exist in the app.layout,
@@ -300,3 +314,5 @@ def display_page(pathname):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+    ### Mising the earthquakes for that day
+    ### in the bk app it looks as white dots
