@@ -130,7 +130,7 @@ def make_graphs(graph_title, measuring_unit, depth, latitude, longitude):
             mode='markers',
             marker=dict(
                 color='White',
-                opacity=0.8,
+                opacity=0.999,
                 size=12,
                 line=dict(color='Magenta',
                 width=2),
@@ -165,11 +165,6 @@ def make_graphs(graph_title, measuring_unit, depth, latitude, longitude):
     return fig
 
 
-# Since we're adding callbacks to elements that don't exist in the app.layout,
-# Dash will raise an exception to warn us that we might be
-# doing something wrong.
-# In this case, we're adding the elements through a callback, so we can ignore
-# the exception.
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
 navbar = dbc.NavbarSimple(
@@ -178,7 +173,7 @@ navbar = dbc.NavbarSimple(
                     dbc.NavItem(dbc.NavLink("Home", href="/")),
                     dbc.NavItem(dbc.NavLink("TEC", href="/tec-content")),
                     dbc.NavItem(dbc.NavLink("OLR", href="/olr-content")),
-                    dbc.NavItem(dbc.NavLink("Temperature", href="#"))
+                    dbc.NavItem(dbc.NavLink("Temperature", href="temp-content"))
                 ],
                 pills=True
         )
@@ -196,9 +191,23 @@ index_page = html.Div([
     html.H1('Home page')
 ])
 
+slider= dbc.Col([  
+    html.Br(),
+    html.H4("Choose the year for which you wish to explore the data"),
+    dcc.Slider(id='year-slider',
+        min=1999,
+        max=2017,
+        value=2015,
+        step=1,
+        marks={
+            i: '{}'.format(i) for i in range(1999,2018)
+        }
+    )
+])
+
 calendar = dbc.Col(
     [
-        html.P("""Explore Data"""),
+        html.Br(),
         dcc.DatePickerSingle(
             id='date-picker',
             with_full_screen_portal=True,
@@ -230,6 +239,7 @@ two_hour_dropdown = dbc.Col(
 
 tec_layout = html.Div([
     html.H1('Total Electron Content Map'),
+    slider,
     calendar,
     two_hour_dropdown,
     html.Div(id='tec-content'),
@@ -242,6 +252,15 @@ def update_eq_coords(date):
     # List of boolean values from comparing the first 10 characters of the date string in 'i' and comparing it to 'date'
     day_indexes = ([i[:10] == date for i in earthquakes_df['time_stamp']])
     return earthquakes_df[day_indexes]
+
+
+@app.callback(
+    Output("date-picker", "date"),
+    [Input("year-slider", "value")]
+)
+def update_calendar(year):
+    return ''.join([str(year), '-05-23'])
+
 
 # Update the date for the 2-hour dropdown #
 @app.callback(
@@ -292,6 +311,8 @@ def update_olr_map(value):
 
 olr_layout = html.Div([
     html.H1('Outgoing Long-Wave Radiation'),
+    html.Br(),
+    slider,
     calendar,
     html.Div(id='olr-content'),
     html.Br(),
