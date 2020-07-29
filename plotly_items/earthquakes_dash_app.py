@@ -4,6 +4,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 from datetime import datetime as dt
+from datetime import date
 
 import plotly.graph_objs as go
 
@@ -296,13 +297,36 @@ def update_tec_map(dropdown_value):
 
     return html.Div(dcc.Graph(id='tec_map', figure=make_graphs(graph_title, measuring_unit, depth, latitude, longitude)))
 
+def olr_date(day,year):
+    global earthquakes_coords, earthquakes_date
+    earthquakes_date = day
+    earthquakes_coords = update_eq_coords(day)
+
+    
+    if year != None:
+        olr_file = ''.join(["/home/antonio/Repos/iono2/olr_csv/", str(year), "_123.csv"])
+        return olr_file
+    else:
+        day = date.fromisoformat(day)
+        d0 = date(day.year, 1, 1)
+        delta = day - d0
+        olr_file = ''.join(["/home/antonio/Repos/iono2/olr_csv/", str(day.year), "_", str(delta.days), ".csv"])
+        return olr_file
+
 
 @app.callback(
     Output('olr-content', 'children')
-, [Input('date-picker', 'value')])
-def update_olr_map(value):
+, [Input('date-picker', 'date'),
+    Input("year-slider", "value")])
+def update_olr_map(day, year):
     graph_title = "Outgoing Long-Wave Radiation"
     measuring_unit = 'Irradiance'
+
+    # Not very pleased with this section
+
+    olr_file = olr_date(day,year)
+    olr_df = pd.read_csv(olr_file, names=olr_columns)
+
     depth = olr_df['olr_value'].values
     longitude = olr_df['longitude'].values
     latitude = olr_df['latitude'].values
@@ -335,5 +359,3 @@ def display_page(pathname):
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-    ### Mising the earthquakes for that day
-    ### in the bk app it looks as white dots
