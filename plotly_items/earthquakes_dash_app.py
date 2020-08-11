@@ -1,3 +1,4 @@
+import base64
 import os
 import pickle
 import pathlib
@@ -14,7 +15,8 @@ import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 
-# Current working directory, pwd in bash.
+# Current working directory, pwd in bash
+
 path = pathlib.Path('~/Repos/iono2')
 
 # Load traces_cc
@@ -26,7 +28,8 @@ with open(traces_cc_file, 'rb') as filehandle:
 earthquakes_columns = ["time_stamp", "latitude", "longitude", "depth", "magnitude"]
 earthquakes_file = path / "earthquakes_csv/1999_2017_earthquakes.csv"
 earthquakes_df = pd.read_csv(earthquakes_file, names=earthquakes_columns)
-earthquakes_coords = []
+earthquakes_lat = []
+earthquakes_lon = []
 earthquakes_date = '2015-05-03'
 
 # TEC variables
@@ -69,11 +72,6 @@ def format_days(day):
     elif len(day) == 3:
         return ''.join([day, '0'])
 
-def update_eq_coords(date):
-
-    # List of boolean values from comparing the first 10 characters of the date string in 'i' and comparing it to 'date'
-    day_indexes = ([i[:10] == date for i in olr_df['time_stamp']])
-    return olr_df[day_indexes]
 
 def make_contour(measuring_unit, depth, latitude, longitude):
 
@@ -94,6 +92,7 @@ def make_contour(measuring_unit, depth, latitude, longitude):
         colorbar=create_colorbar_dict(measuring_unit)
     )
         
+    #data = (traces_cc)
     data = ([trace1] + traces_cc)
     return data
 
@@ -114,20 +113,29 @@ def make_frames(measuring_unit, depth, latitude, longitude):
     ))
     return frames
 
+def update_eq_coords(date):
+    global earthquakes_lat, earthquakes_lon
+
+    # List of boolean values from comparing the first 10 characters of the date string in 'i' and comparing it to 'date'
+    day_indexes = ([i[:10] == date for i in earthquakes_df['time_stamp']])
+    df = earthquakes_df[day_indexes]
+    earthquakes_lat = df["latitude"].values
+    earthquakes_lon = df["longitude"].values
     
-def make_graphs(graph_title, measuring_unit, depth, latitude, longitude):
-    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, path
+def make_graphs(day, graph_title, measuring_unit, depth, latitude, longitude):
+    global earthquakes_lat, earthquakes_lon
+
     fig = go.Figure(
         data=make_contour(measuring_unit, depth, latitude, longitude),
         layout=make_layout(),
         frames=make_frames(measuring_unit, depth, latitude, longitude)
     )
 
-    #### Plot earthquakes for that day
+    #### Plot earthquakes as circles for that day
     fig.add_trace(
         go.Scatter(
-            x=earthquakes_coords['longitude'],
-            y=earthquakes_coords['latitude'],
+            x=earthquakes_lon,
+            y=earthquakes_lat,
             mode='markers',
             marker=dict(
                 color='White',
@@ -136,8 +144,7 @@ def make_graphs(graph_title, measuring_unit, depth, latitude, longitude):
                 line=dict(color='Magenta',
                 width=2),
             ),
-            showlegend=False,
-            hovertext=earthquakes_coords['time_stamp']
+            showlegend=True
 
         )
     )
@@ -173,8 +180,8 @@ navbar = dbc.NavbarSimple(
                 children=[
                     dbc.NavItem(dbc.NavLink("Home", href="/")),
                     dbc.NavItem(dbc.NavLink("TEC", href="/tec-content")),
-                    dbc.NavItem(dbc.NavLink("OLR", href="/olr-content")),
-                    dbc.NavItem(dbc.NavLink("Temperature", href="temp-content"))
+                    dbc.NavItem(dbc.NavLink("OLR", href="/olr-content"))
+                    #dbc.NavItem(dbc.NavLink("Temperature", href="temp-content"))
                 ],
                 pills=True
         )
@@ -187,9 +194,33 @@ app.layout = html.Div([
     html.Div(id='page-content')
 ])
 
-
+# Home page and maps png
+olr_map_png = '/home/antonio/Repos/iono2/plotly_items/olr_map.png'
+tec_map_png = '/home/antonio/Repos/iono2/plotly_items/tec_map.png'
+encoded_olr_map_png = base64.b64encode(open(olr_map_png, 'rb').read()).decode('ascii')
+encoded_tec_map_png = base64.b64encode(open(tec_map_png, 'rb').read()).decode('ascii')
 index_page = html.Div([
-    html.H1('Home page')
+    html.H1("TEC and OLR Data Plotting App"),
+    html.Br(),
+    html.P([
+    "This is just a simple app to plot the TEC and OLR data. \n Plotting is a little slow, this is partially due to the software used for the app.",
+    html.Br(),
+    "The TEC and OLR pages offer the option to plot daily data.",
+    html.Br(),
+    html.Br(),
+    html.H2("TEC"),
+    "The TEC data is more granular, it is available in 2 hour resolution.",
+    html.Br()
+    ]),
+    html.Img(src='data:image/png;base64,{}'.format(encoded_tec_map_png)),
+    html.Br(),
+    html.P([
+    html.H2("OLR"),
+    "The OLR data is per day only.",
+    html.Br(),
+    html.Br()
+    ]),
+    html.Img(src='data:image/png;base64,{}'.format(encoded_olr_map_png))
 ])
 
 slider= dbc.Col([  
@@ -235,9 +266,6 @@ two_hour_dropdown = dbc.Col(
    ], style={'marginBottom':'2em'}
 ) # End of Dropdown Col
 
-#graph_col =  dbc.Col(html.Div(dcc.Graph(id="map",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12)
-
-
 tec_layout = html.Div([
     html.H1('Total Electron Content Map'),
     slider,
@@ -247,20 +275,24 @@ tec_layout = html.Div([
     html.Br(),
 ])
 
-
-def update_eq_coords(date):
-
-    # List of boolean values from comparing the first 10 characters of the date string in 'i' and comparing it to 'date'
-    day_indexes = ([i[:10] == date for i in earthquakes_df['time_stamp']])
-    return earthquakes_df[day_indexes]
-
+olr_layout = html.Div([
+    html.H1('Outgoing Long-Wave Radiation'),
+    html.Br(),
+    slider,
+    calendar,
+    html.Div(id='olr-content'),
+    html.Br(),
+    #dbc.Col(html.Div(dcc.Graph(id="olr_map",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12),
+    html.Br()
+])
 
 @app.callback(
     Output("date-picker", "date"),
     [Input("year-slider", "value")]
 )
 def update_calendar(year):
-    return ''.join([str(year), '-05-23'])
+    date_string = ''.join([str(year), '-05-23'])
+    return date_string
 
 
 # Update the date for the 2-hour dropdown #
@@ -269,10 +301,8 @@ def update_calendar(year):
     [Input("date-picker", "date")]
     )
 def update_value(date):
-    global tec_df, tec_columns, initial_map, earthquakes_coords, earthquakes_date, path
-
-    earthquakes_date = date
-    earthquakes_coords = update_eq_coords(date)
+    global tec_df, tec_columns, initial_map, earthquakes_date, path
+    update_eq_coords(date)
 
     start_date = dt.strptime((''.join([date[:4], "-1-1"])), '%Y-%m-%d')
     new_date = dt.strptime(date, '%Y-%m-%d')
@@ -286,8 +316,8 @@ def update_value(date):
 @app.callback(
     Output('tec-content', 'children')
 , [Input("dropdown", "value")])
-def update_tec_map(dropdown_value):
-    tec_map_df = tec_df[tec_df['time_stamp'] == dropdown_value]
+def update_tec_map(date):
+    tec_map_df = tec_df[tec_df['time_stamp'] == date]
 
     graph_title = "Total Electron Content"
     measuring_unit = 'TEC'
@@ -295,14 +325,11 @@ def update_tec_map(dropdown_value):
     longitude = tec_map_df['longitude'].values
     latitude = tec_map_df['latitude'].values
 
-    return html.Div(dcc.Graph(id='tec_map', figure=make_graphs(graph_title, measuring_unit, depth, latitude, longitude)))
+
+    figure=make_graphs(date, graph_title, measuring_unit, depth, latitude, longitude)
+    return html.Div(dcc.Graph(id='tec_map', figure=figure))
 
 def olr_date(day,year):
-    global earthquakes_coords, earthquakes_date
-    earthquakes_date = day
-    earthquakes_coords = update_eq_coords(day)
-
-    
     if year != None:
         olr_file = ''.join(["/home/antonio/Repos/iono2/olr_csv/", str(year), "_123.csv"])
         return olr_file
@@ -322,6 +349,8 @@ def update_olr_map(day, year):
     graph_title = "Outgoing Long-Wave Radiation"
     measuring_unit = 'Irradiance'
 
+    update_eq_coords(day)
+
     # Not very pleased with this section
 
     olr_file = olr_date(day,year)
@@ -331,18 +360,8 @@ def update_olr_map(day, year):
     longitude = olr_df['longitude'].values
     latitude = olr_df['latitude'].values
 
-    return html.Div(dcc.Graph(id='olr_map', figure=make_graphs(graph_title, measuring_unit, depth, latitude, longitude)))
+    return html.Div(dcc.Graph(id='olr_map', figure=make_graphs(day,graph_title, measuring_unit, depth, latitude, longitude)))
 
-olr_layout = html.Div([
-    html.H1('Outgoing Long-Wave Radiation'),
-    html.Br(),
-    slider,
-    calendar,
-    html.Div(id='olr-content'),
-    html.Br(),
-    #dbc.Col(html.Div(dcc.Graph(id="olr_map",style={'width':'100vw','height':'70vh'})), md=12, lg=8, sm=12),
-    html.Br()
-])
 
 # Update the index
 @app.callback(dash.dependencies.Output('page-content', 'children'),
@@ -358,4 +377,4 @@ def display_page(pathname):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
